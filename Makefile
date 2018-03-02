@@ -1,20 +1,20 @@
 #Makefile - PANAGIOTIS EVANGELIOU  AM:1115201500039
 
-OBJS = main.o ./manageFuns/manageFuns.o
-SOURCE = main.c ./manageFuns/manageFuns.c
+OBJS = ./main/main.o ./manageFuns/manageFuns.o
+SOURCE = ./main/main.c ./manageFuns/manageFuns.c
 HEADER = ./manageFuns/manageFuns.h
-OUT = minisearch
+OUT = ./build/minisearch
 CC = gcc
 FLAGS = -g -c -Wall
 
 $(OUT): $(OBJS)
-	$(CC) -g $(OBJS) -o $@
+	$(CC) -g -Wall $(OBJS) -o $@
 
-main.o: main.c
-	$(CC) $(FLAGS) main.c
+./main/main.o: ./main/main.c
+	$(CC) $(FLAGS) ./main/main.c -o ./main/main.o
 
 ./manageFuns/manageFuns.o: ./manageFuns/manageFuns.c
-	 $(CC) $(FLAGS) ./manageFuns/manageFuns.c
+	$(CC) $(FLAGS) ./manageFuns/manageFuns.c -o ./manageFuns/manageFuns.o
 
 clean:
 	rm -f $(OBJS) $(OUT)

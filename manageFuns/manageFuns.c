@@ -32,7 +32,7 @@ int argumentManagement( int argNum, char const **arguments, char **inputFileName
 			}
 
 			if( *inputFileName == NULL ){
-				*inputFileName = malloc( (strlen(arguments[i] + 1) * sizeof(char) ) );
+				*inputFileName = malloc( (strlen(arguments[2]) + 1) * sizeof(char) );
 				strcpy(*inputFileName,arguments[2]);
 			}
 			else{
@@ -57,7 +57,7 @@ int argumentManagement( int argNum, char const **arguments, char **inputFileName
 				if( arg1_ok == 1 ){ /* Cannot give 2 times -i docfile */
 
 					if( *inputFileName != NULL ){
-						free(inputFileName);
+						free(*inputFileName);
 						*inputFileName = NULL;
 					}
 
@@ -73,8 +73,8 @@ int argumentManagement( int argNum, char const **arguments, char **inputFileName
 				}
 
 				if( *inputFileName == NULL ){
-					*inputFileName = malloc( (strlen(arguments[i] + 1) * sizeof(char) ) );
-					strcpy(*inputFileName,arguments[2]);
+					*inputFileName = malloc( (strlen(arguments[i]) + 1) * sizeof(char) );
+					strcpy(*inputFileName,arguments[i]);
 				}
 				else{
 					return -4;
