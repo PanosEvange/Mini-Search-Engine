@@ -12,12 +12,12 @@ int main(int argc, char const *argv[]) {
 	docMap myMap = NULL;
 
 	docMap_Init(&myMap,numberOfDocuments);
-	docMap_InsertDoc(&myMap,doc1,0);
-	docMap_InsertDoc(&myMap,doc2,1);
-	docMap_InsertDoc(&myMap,doc3,2);
-	docMap_PrintDoc(&myMap,words,0);
-	docMap_PrintDoc(&myMap,words,1);
-	docMap_PrintDoc(&myMap,words,2);
+	docMap_InsertDoc(myMap,doc1,0);
+	docMap_InsertDoc(myMap,doc2,1);
+	docMap_InsertDoc(myMap,doc3,2);
+	docMap_PrintDoc(myMap,words,0);
+	docMap_PrintDoc(myMap,words,1);
+	docMap_PrintDoc(myMap,words,2);
 	docMap_Destroy(&myMap,numberOfDocuments);
 
 	return 0;

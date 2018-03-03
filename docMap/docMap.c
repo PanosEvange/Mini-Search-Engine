@@ -64,17 +64,17 @@ int docMap_Destroy( docMap *currentMap, int numOfDocs ){
 }
 
 /* Insert given docToInsert document into currentMap docMap */
-int docMap_InsertDoc( docMap *currentMap, char *docToInsert, int index ){
+int docMap_InsertDoc( docMap currentMap, char *docToInsert, int index ){
 
-	if( (*currentMap)[index] == NULL ){
+	if( currentMap[index] == NULL ){
 
-		(*currentMap)[index] = malloc( ( strlen(docToInsert) + 1 ) * sizeof(char) );
+		currentMap[index] = malloc( ( strlen(docToInsert) + 1 ) * sizeof(char) );
 
-		if( (*currentMap)[index] == NULL ){
+		if( currentMap[index] == NULL ){
 			return -1;
 		}
 
-		strcpy((*currentMap)[index],docToInsert);
+		strcpy(currentMap[index],docToInsert);
 
 	}
 	else{
@@ -85,9 +85,9 @@ int docMap_InsertDoc( docMap *currentMap, char *docToInsert, int index ){
 }
 
 /* Print document with index id and highlight the wordsToHighlight words */
-int docMap_PrintDoc( docMap *currentMap, char **wordsToHighlight, int index ){
+int docMap_PrintDoc( docMap currentMap, char **wordsToHighlight, int index ){
 
-	printf("document with id %d is -%s-\n",index,(*currentMap)[index] );
+	printf("document with id %d is -%s-\n",index,currentMap[index] );
 
 	return 1;
 }

@@ -13,7 +13,7 @@ typedef char ** docMap;
 
 int docMap_Init( docMap *currentMap, int numOfDocs );
 int docMap_Destroy( docMap *currentMap, int numOfDocs );
-int docMap_InsertDoc( docMap *currentMap, char *docToInsert, int index );
-int docMap_PrintDoc( docMap *currentMap, char **wordsToHighlight, int index );
+int docMap_InsertDoc( docMap currentMap, char *docToInsert, int index );
+int docMap_PrintDoc( docMap currentMap, char **wordsToHighlight, int index );
 
 #endif /* DOC_MAP_H */
