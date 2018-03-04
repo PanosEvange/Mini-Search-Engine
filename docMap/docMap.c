@@ -7,7 +7,7 @@ Description	: > docMap_Init :
 			  > docMap_PrintDoc :
 			  > docMap_IsWordIn :
 			  > docMap_IsIndexIn :
-
+			  > docMap_HighlightText :
 ***************************************************************************/
 #include <stdlib.h>
 #include <string.h>
@@ -99,11 +99,7 @@ int docMap_InsertDoc( docMap currentMap, char *docToInsert, int index ){
 /* Print document with index id and highlight the wordsToHighlight words */
 int docMap_PrintDoc( docMap currentMap, words wordsToHighlight, int index, char *specialInfo ){
 
-	char *word;
 	char *highlightingString = NULL;
-	char *temp = NULL;
-
-	int offset,offsetOriginal;
 
 	struct winsize ws;
 	int terminalWidth;
@@ -121,56 +117,9 @@ int docMap_PrintDoc( docMap currentMap, words wordsToHighlight, int index, char 
 		return -3;
 	}
 
-	/* Make highlighting string */
-	highlightingString = malloc( ( strlen(currentMap.map[index]) + strlen(specialInfo) + 1 ) * sizeof(char) );
-
-	/* We need a copy of document as we will use strtok. */
-	temp = malloc( ( strlen(currentMap.map[index]) + 1 ) * sizeof(char) );
-	strcpy(temp,currentMap.map[index]);
-
-	word = strtok(temp," \t");
-
-	/* Write spaces at the beginning of highlightingString as we have specialInfo */
-	memset(highlightingString,' ',strlen(specialInfo));
-	offset = strlen(specialInfo);
-	offsetOriginal = 0;
-
-	while( word != NULL ){
-
-		//printf("h word einai -%s-\n",word );
-
-		/* Copy spaces or tabs till we find the beginning of the word */
-		while( (currentMap.map[index][offsetOriginal] == ' ') || (currentMap.map[index][offsetOriginal] == '\t') ){
-			memset(highlightingString + offset,currentMap.map[index][offsetOriginal],1);
-			offset++;
-			offsetOriginal++;
-		}
-
-		if( docMap_IsWordIn(wordsToHighlight,word) ){ /* Write ^^^^ */
-
-			memset(highlightingString + offset,'^',strlen(word));
-			offset += strlen(word);
-			offsetOriginal += strlen(word);
-
-		}
-		else{ /* Write spaces */
-
-			memset(highlightingString + offset,' ',strlen(word));
-			offset += strlen(word);
-			offsetOriginal += strlen(word);
-
-		}
-
-		word = strtok(NULL," \t");
-
+	if( docMap_HighlightText(currentMap.map[index], specialInfo, &highlightingString, wordsToHighlight) != 1 ){
+		return -5;
 	}
-
-	/* Write spaces/tabs which may exists after the last word of the document */
-	if( offset < ( strlen(currentMap.map[index]) + strlen(specialInfo) ) ){
-		memset(highlightingString + offset,' ',( strlen(currentMap.map[index]) + strlen(specialInfo) ) - offset );
-	}
-
-	highlightingString[strlen(currentMap.map[index]) + strlen(specialInfo)] = '\0';
 
 	/* Print the document as it is */
 	printf("%s%s\n",specialInfo,currentMap.map[index] );
@@ -178,7 +127,6 @@ int docMap_PrintDoc( docMap currentMap, words wordsToHighlight, int index, char 
 	printf("%s\n",highlightingString );
 
 	free(highlightingString);
-	free(temp);
 
 	return 1;
 }
@@ -205,4 +153,75 @@ char docMap_IsIndexIn( docMap mapToCheck, int indexToCheck ){
 		return -1;
 	}
 
+}
+
+/* Constructing highlightingString given original string, words to highlight and special info string */
+int docMap_HighlightText( char *original, char *specialInfo, char **highlightingString, words wordsToHighlight ){
+
+	char *word;
+	int offset,offsetOriginal;
+	char *temp = NULL;
+
+	if( (*highlightingString) == NULL ){
+		(*highlightingString) = malloc( ( strlen(original) + strlen(specialInfo) + 1 ) * sizeof(char) );
+		if( (*highlightingString) == NULL ){
+			return -2;
+		}
+	}
+	else{
+		return -1;
+	}
+
+	/* We need a copy of document as we will use strtok. */
+	temp = malloc( ( strlen(original) + 1 ) * sizeof(char) );
+	if( temp == NULL ){
+		return -3;
+	}
+
+	strcpy(temp,original);
+
+	word = strtok(temp," \t");
+
+	/* Write spaces at the beginning of highlightingString as we have specialInfo */
+	memset((*highlightingString),' ',strlen(specialInfo));
+	offset = strlen(specialInfo);
+	offsetOriginal = 0;
+
+	while( word != NULL ){
+
+		/* Copy spaces or tabs till we find the beginning of the word */
+		while( (original[offsetOriginal] == ' ') || (original[offsetOriginal] == '\t') ){
+			memset((*highlightingString) + offset,original[offsetOriginal],1);
+			offset++;
+			offsetOriginal++;
+		}
+
+		if( docMap_IsWordIn(wordsToHighlight,word) ){ /* Write ^^^^ */
+
+			memset((*highlightingString) + offset,'^',strlen(word));
+			offset += strlen(word);
+			offsetOriginal += strlen(word);
+
+		}
+		else{ /* Write spaces */
+
+			memset((*highlightingString) + offset,' ',strlen(word));
+			offset += strlen(word);
+			offsetOriginal += strlen(word);
+
+		}
+
+		word = strtok(NULL," \t");
+
+	}
+
+	/* Write spaces/tabs which may exists after the last word of the document */
+	if( offset < ( strlen(original) + strlen(specialInfo) ) ){
+		memset((*highlightingString) + offset,' ',( strlen(original) + strlen(specialInfo) ) - offset );
+	}
+
+	(*highlightingString)[strlen(original) + strlen(specialInfo)] = '\0';
+
+	free(temp);
+	return 1;
 }
