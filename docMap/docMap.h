@@ -22,7 +22,7 @@ typedef struct words{
 int docMap_Init( docMap *currentMap, int numOfDocs );
 int docMap_Destroy( docMap *currentMap );
 int docMap_InsertDoc( docMap currentMap, char *docToInsert, int index );
-int docMap_PrintDoc( docMap currentMap, words wordsToHighlight, int index );
+int docMap_PrintDoc( docMap currentMap, words wordsToHighlight, int index, char *specialInfo );
 char docMap_IsWordIn( words wordsToSearch, char *wordToCheck );
 char docMap_IsIndexIn( docMap mapToCheck, int indexToCheck );
 

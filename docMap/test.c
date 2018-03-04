@@ -8,8 +8,8 @@ int main(int argc, char const *argv[]) {
 
 	char doc1[17] = "Hello world of C";
 	char doc2[14] = "Haha have fun";
-	char doc3[24] = "Wow yolo and have fun";
-
+	char doc3[29] = "  \tWow \tyolo and have fun  \t";
+	char specialInfo[] = "1.( 1)[0.0341] ";
 	int numberOfDocuments = 3;
 
 	words myWords;
@@ -34,7 +34,7 @@ int main(int argc, char const *argv[]) {
 	docMap_InsertDoc(myMap,doc2,1);
 	docMap_InsertDoc(myMap,doc3,2);
 
-	docMap_PrintDoc(myMap,myWords,2);
+	docMap_PrintDoc(myMap,myWords,2,specialInfo);
 
 	docMap_Destroy(&myMap);
 
