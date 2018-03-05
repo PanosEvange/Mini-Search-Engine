@@ -8,7 +8,7 @@ int main(int argc, char const *argv[]) {
 
 	char doc1[17] = "Hello world of C";
 	char doc2[14] = "Haha have fun";
-	char doc3[29] = "  \tWow \tyolo and have fun  \t";
+	char doc3[22] = "Wow yolo and have fun";
 	char specialInfo[] = "1.( 1)[0.0341] ";
 	int numberOfDocuments = 3;
 

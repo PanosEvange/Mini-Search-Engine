@@ -25,6 +25,7 @@ int docMap_InsertDoc( docMap currentMap, char *docToInsert, int index );
 int docMap_PrintDoc( docMap currentMap, words wordsToHighlight, int index, char *specialInfo );
 char docMap_IsWordIn( words wordsToSearch, char *wordToCheck );
 char docMap_IsIndexIn( docMap mapToCheck, int indexToCheck );
-int docMap_HighlightText( char *original, char *specialInfo, char **highlightingString, words wordsToHighlight );
+int docMap_HighlightText( char *original, char **highlightingString, words wordsToHighlight );
+int docMap_PrintHighlightedText( char *text, char *highlightingString, char *specialInfo );
 
 #endif /* DOC_MAP_H */

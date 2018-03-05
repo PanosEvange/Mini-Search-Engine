@@ -8,6 +8,7 @@ Description	: > docMap_Init :
 			  > docMap_IsWordIn :
 			  > docMap_IsIndexIn :
 			  > docMap_HighlightText :
+			  > docMap_PrintHighlightedText :
 ***************************************************************************/
 #include <stdlib.h>
 #include <string.h>
@@ -101,30 +102,17 @@ int docMap_PrintDoc( docMap currentMap, words wordsToHighlight, int index, char 
 
 	char *highlightingString = NULL;
 
-	struct winsize ws;
-	int terminalWidth;
-
-	if( ioctl(1,TIOCGWINSZ,&ws) == 0 ){ /* File descriptor of STDOUT is 1 */
-		terminalWidth = ws.ws_col;
+	if( !docMap_IsIndexIn(currentMap,index) ){
+		return -1;
 	}
-	else{
+
+	if( docMap_HighlightText(currentMap.map[index], &highlightingString, wordsToHighlight) != 1 ){
+		return -2;
+	}
+
+	if( docMap_PrintHighlightedText( currentMap.map[index], highlightingString , specialInfo) != 1 ){
 		return -4;
 	}
-
-	//printf("to terminalWidth einai %d \n",terminalWidth );
-
-	if( !docMap_IsIndexIn(currentMap,index) ){
-		return -3;
-	}
-
-	if( docMap_HighlightText(currentMap.map[index], specialInfo, &highlightingString, wordsToHighlight) != 1 ){
-		return -5;
-	}
-
-	/* Print the document as it is */
-	printf("%s%s\n",specialInfo,currentMap.map[index] );
-
-	printf("%s\n",highlightingString );
 
 	free(highlightingString);
 
@@ -156,14 +144,14 @@ char docMap_IsIndexIn( docMap mapToCheck, int indexToCheck ){
 }
 
 /* Constructing highlightingString given original string, words to highlight and special info string */
-int docMap_HighlightText( char *original, char *specialInfo, char **highlightingString, words wordsToHighlight ){
+int docMap_HighlightText( char *original, char **highlightingString, words wordsToHighlight ){
 
 	char *word;
 	int offset,offsetOriginal;
 	char *temp = NULL;
 
 	if( (*highlightingString) == NULL ){
-		(*highlightingString) = malloc( ( strlen(original) + strlen(specialInfo) + 1 ) * sizeof(char) );
+		(*highlightingString) = malloc( ( strlen(original) + 1 ) * sizeof(char) );
 		if( (*highlightingString) == NULL ){
 			return -2;
 		}
@@ -182,9 +170,7 @@ int docMap_HighlightText( char *original, char *specialInfo, char **highlighting
 
 	word = strtok(temp," \t");
 
-	/* Write spaces at the beginning of highlightingString as we have specialInfo */
-	memset((*highlightingString),' ',strlen(specialInfo));
-	offset = strlen(specialInfo);
+	offset = 0;
 	offsetOriginal = 0;
 
 	while( word != NULL ){
@@ -216,11 +202,110 @@ int docMap_HighlightText( char *original, char *specialInfo, char **highlighting
 	}
 
 	/* Write spaces/tabs which may exists after the last word of the document */
-	if( offset < ( strlen(original) + strlen(specialInfo) ) ){
-		memset((*highlightingString) + offset,' ',( strlen(original) + strlen(specialInfo) ) - offset );
+	if( offset < strlen(original) ){
+		memset((*highlightingString) + offset,' ',strlen(original) - offset );
 	}
 
-	(*highlightingString)[strlen(original) + strlen(specialInfo)] = '\0';
+	(*highlightingString)[strlen(original)] = '\0';
+
+	free(temp);
+	return 1;
+}
+
+/* Printing document text and special info at the beginning, with ^^^ above the words we need to mark.*/
+int docMap_PrintHighlightedText( char *text, char *highlightingString, char *specialInfo ){
+
+	struct winsize ws;
+	int terminalWidth;
+	int counterOriginal,counterHighlight,counterWidth;
+	int firstTime = 1;
+	char *temp = NULL;
+	char *word;
+
+	if( ioctl(1,TIOCGWINSZ,&ws) == 0 ){ /* File descriptor of STDOUT is 1 */
+		terminalWidth = ws.ws_col;
+	}
+	else{
+		return -1;
+	}
+
+	/* We need a copy of document as we will use strtok. */
+	temp = malloc( ( strlen(text) + 1 ) * sizeof(char) );
+	if( temp == NULL ){
+		return -3;
+	}
+
+	strcpy(temp,text);
+
+	word = strtok(temp," \t");
+
+	//printf("to terminalWidth einai %d \n",terminalWidth );
+
+	counterWidth = 0;
+	counterOriginal = 0;
+	counterHighlight = 0;
+
+	/* Print specialInfo */
+	printf("%s",specialInfo );
+	counterWidth += strlen(specialInfo);
+
+	while( word != NULL ){
+
+		if( !firstTime ){
+
+			/* Print strlen(specialInfo) spaces so as to have alignment. */
+			for( int i=0; i<strlen(specialInfo); i++ ){
+				printf(" ");
+			}
+
+			counterWidth += strlen(specialInfo);
+
+		}
+
+		/* Print words or spaces/tabs of original text */
+		while( (counterOriginal < strlen(text)) && (counterWidth < terminalWidth) && (word != NULL) ){
+
+			/* Print spaces or tabs till we find the beginning of the word */
+			while( ( (text[counterOriginal] == ' ') || (text[counterOriginal] == '\t') ) && (counterWidth < terminalWidth) ){
+				printf("%c",text[counterOriginal] );
+				counterWidth++;
+				counterOriginal++;
+			}
+
+			/* Print word if there is space for it, else break */
+			if( (strlen(word) + counterWidth) <= terminalWidth ){
+				printf("%s",word );
+				counterOriginal += strlen(word);
+				counterWidth += strlen(word);
+				word = strtok(NULL," \t");
+			}
+			else{
+				break;
+			}
+
+		}
+
+		printf("\n");
+		counterWidth = 0;
+
+		/* Print strlen(specialInfo) spaces so as to have alignment. */
+		for( int i=0; i<strlen(specialInfo); i++ ){
+			printf(" ");
+		}
+
+		counterWidth += strlen(specialInfo);
+
+		for( int i=counterHighlight; i<counterOriginal; i++ ){
+			printf("%c",highlightingString[counterHighlight] );
+			counterHighlight ++;
+			counterWidth ++;
+		}
+
+		printf("\n");
+		counterWidth = 0;
+
+		firstTime = 0;
+	}
 
 	free(temp);
 	return 1;
