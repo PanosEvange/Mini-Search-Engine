@@ -30,7 +30,19 @@ int main(int argc, char const *argv[]) {
 	PL_InsertAtEnd(myPostList,tempDocInfo);
 	PL_IncrLastTermFreq(myPostList);
 
+	tempDocInfo.id = 7;
+	tempDocInfo.termFrequency = 10000;
+	PL_InsertAtEnd(myPostList,tempDocInfo);
+	PL_IncrLastTermFreq(myPostList);
+
+	tempDocInfo.id = 9;
+	tempDocInfo.termFrequency = 100000;
+	PL_InsertAtEnd(myPostList,tempDocInfo);
+	PL_IncrLastTermFreq(myPostList);
+
 	printf("termFrequency of docId 2 is %d \n",PL_GetTermFrequency(myPostList,2) );
+	printf("termFrequency of docId 5 is %d \n",PL_GetTermFrequency(myPostList,5) );
+	printf("termFrequency of docId 8 is %d \n",PL_GetTermFrequency(myPostList,8) );
 
 	printf("docFrequency of PL is %d \n",PL_GetDocFrequency(myPostList) );
 

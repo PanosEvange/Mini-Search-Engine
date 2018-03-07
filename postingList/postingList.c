@@ -127,11 +127,19 @@ int PL_GetTermFrequency( PL_Header *header, int docId ){
 		return -3;
 	}
 
+	/* Find given docId */
 	current = header->first;
 	while( current != NULL ){
 
-		if( docId == ( docInfo_GetDocId(current->myInfo) ) ){
-			return docInfo_GetTermFreq(current->myInfo);
+		if( docId <= ( docInfo_GetDocId(current->myInfo) ) ){ /* It means that we found given docId or there is no such a docId */
+
+			if( docId == ( docInfo_GetDocId(current->myInfo) ) ){
+				return docInfo_GetTermFreq(current->myInfo);
+			}
+			else{	/* docIds are sorted, so there is no such a docId */
+				return -1;	/* Not found */
+			}
+
 		}
 
 		current = current->next;
