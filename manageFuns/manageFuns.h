@@ -9,6 +9,6 @@ Description :
 #ifndef MANAGE_H
 #define MANAGE_H
 
-int argumentManagement( int argNum, char const **arguments, char **inputFileName, int *k );
+int ArgumentManagement( int arg_num, char const **arguments, char **input_file_name, int *k );
 
 #endif /* MANAGE_H */

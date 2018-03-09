@@ -17,11 +17,11 @@ using namespace std;
 
 int main(int argc, char const *argv[]) {
 
-	char* inputFileName = NULL;
-	int topResults;
+	char* input_file_name = NULL;
+	int top_results;
 	int error;
 
-	error = argumentManagement( argc, argv, &inputFileName, &topResults );
+	error = ArgumentManagement( argc, argv, &input_file_name, &top_results );
 
 	switch (error) {
 		case -1:	/* Wrong arguments */
@@ -38,11 +38,11 @@ int main(int argc, char const *argv[]) {
 				return -4;
 	}
 
-	cout << "K is " << topResults << " and inputFileName is " << inputFileName << endl;
+	cout << "K is " << top_results << " and input_file_name is " << input_file_name << endl;
 
 	/* Delete */
-	if( inputFileName != NULL ){
-		delete(inputFileName);
+	if( input_file_name != NULL ){
+		delete[] input_file_name;
 	}
 	else{
 		return -5;

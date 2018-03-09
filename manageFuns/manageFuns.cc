@@ -19,13 +19,13 @@ using namespace std;
 #include "manageFuns.h"
 
 /* Checking arguments and returning error if something is wrong */
-int argumentManagement( int argNum, char const **arguments, char **inputFileName, int *k ){
+int ArgumentManagement( int arg_num, char const **arguments, char **input_file_name, int *k ){
 
-	char arg1_ok = 0;
-	char arg2_ok = 0;
+	bool arg1_ok = false;
+	bool arg2_ok = false;
 	int i=0;
 
-	if( argNum == 3 ){ /* We should get only -i docfile as argument */
+	if( arg_num == 3 ){ /* We should get only -i docfile as argument */
 		if( strcmp(arguments[1],"-i") == 0 ){
 
 			/* Check if file exists */
@@ -33,9 +33,9 @@ int argumentManagement( int argNum, char const **arguments, char **inputFileName
 				return -2;
 			}
 
-			if( *inputFileName == NULL ){
-				*inputFileName = new char [strlen(arguments[2]) + 1];
-				strcpy(*inputFileName,arguments[2]);
+			if( *input_file_name == NULL ){
+				*input_file_name = new char [strlen(arguments[2]) + 1];
+				strcpy(*input_file_name,arguments[2]);
 			}
 			else{
 				return -4;
@@ -50,17 +50,17 @@ int argumentManagement( int argNum, char const **arguments, char **inputFileName
 			return -1;
 		}
 	}
-	else if( argNum == 5 ){ /* We should get  -i docfile -k K in any order */
+	else if( arg_num == 5 ){ /* We should get  -i docfile -k K in any order */
 
-		for( i = 1; i < argNum; i++ ){
+		for( i = 1; i < arg_num; i++ ){
 
 			if( strcmp(arguments[i],"-i") == 0 ){
 
-				if( arg1_ok == 1 ){ /* Cannot give 2 times -i docfile */
+				if( arg1_ok ){ /* Cannot give 2 times -i docfile */
 
-					if( *inputFileName != NULL ){
-						delete(*inputFileName);
-						*inputFileName = NULL;
+					if( *input_file_name != NULL ){
+						delete[] (*input_file_name);
+						*input_file_name = NULL;
 					}
 
 					return -1;
@@ -74,20 +74,20 @@ int argumentManagement( int argNum, char const **arguments, char **inputFileName
 					return -2;
 				}
 
-				if( *inputFileName == NULL ){
-					*inputFileName = new char [strlen(arguments[i]) + 1];
-					strcpy(*inputFileName,arguments[i]);
+				if( *input_file_name == NULL ){
+					*input_file_name = new char [strlen(arguments[i]) + 1];
+					strcpy(*input_file_name,arguments[i]);
 				}
 				else{
 					return -4;
 				}
 
-				arg1_ok = 1;
+				arg1_ok = true;
 
 			}
 			else if( strcmp(arguments[i],"-k") == 0 ){
 
-				if( arg2_ok == 1 ){ /* Cannot give 2 times -k K */
+				if( arg2_ok ){ /* Cannot give 2 times -k K */
 					return -1;
 				}
 
@@ -98,7 +98,7 @@ int argumentManagement( int argNum, char const **arguments, char **inputFileName
 					return -3;
 				}
 
-				arg2_ok = 1;
+				arg2_ok = true;
 
 			}
 			else{
