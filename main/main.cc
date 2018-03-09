@@ -1,5 +1,5 @@
 /**************************************************************************
-Source file	: main.c
+Source file	: main.cc
 Programmer	: PANAGIOTIS EVANGELIOU  AM:1115201500039
 Description	: > Management of arguments
 			  > Calling init and destroy functions of structures
@@ -8,9 +8,9 @@ Description	: > Management of arguments
 
 ***************************************************************************/
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#include <cstring>
+#include <iostream>
+using namespace std;
 
 #include "../manageFuns/manageFuns.h"
 
@@ -25,22 +25,24 @@ int main(int argc, char const *argv[]) {
 
 	switch (error) {
 		case -1:	/* Wrong arguments */
-				printf("Wrong arguments. Please run again in this way (in any order): %s [-k K] -i docfile \n",argv[0]);
+				cout << "Wrong arguments. Please run again in this way (in any order): " << argv[0] << " [-k K] -i docfile " << endl;
 				return -1;
 		case -2:	/* File not exists */
-				printf("File not exists. Please run again giving a valid file name.\n" );
+				cout << "File not exists. Please run again giving a valid file name." << endl;
 				return -2;
 		case -3:	/* Invalid value of K argument */
-				printf("Invalid value of K argument. Please run again giving a valid value ( K > 0 ).\n" );
+				cout << "Invalid value of K argument. Please run again giving a valid value ( K > 0 )." << endl;
 				return -3;
 		case -4:	/* Other error */
-				printf("Something went wrong. Please run again in this way (in any order): %s [-k K] -i docfile \n",argv[0]);
+				cout << "Something went wrong. Please run again in this way (in any order): " << argv[0] << " [-k K] -i docfile " << endl;
 				return -4;
 	}
 
-	/* Free */
+	cout << "K is " << topResults << " and inputFileName is " << inputFileName << endl;
+
+	/* Delete */
 	if( inputFileName != NULL ){
-		free(inputFileName);
+		delete(inputFileName);
 	}
 	else{
 		return -5;

@@ -1,5 +1,5 @@
 /**************************************************************************
-Source file	: manageFuns.c
+Source file	: manageFuns.cc
 Programmer	: PANAGIOTIS EVANGELIOU  AM:1115201500039
 Description	: > argumentManagement : checks if arguments are ok and returning
 				corresponding error if something is wrong
@@ -10,9 +10,11 @@ Description	: > argumentManagement : checks if arguments are ok and returning
 ***************************************************************************/
 
 #include <unistd.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#include <cstring>
+#include <iostream>
+#include <cstdlib>
+
+using namespace std;
 
 #include "manageFuns.h"
 
@@ -32,7 +34,7 @@ int argumentManagement( int argNum, char const **arguments, char **inputFileName
 			}
 
 			if( *inputFileName == NULL ){
-				*inputFileName = malloc( (strlen(arguments[2]) + 1) * sizeof(char) );
+				*inputFileName = new char [strlen(arguments[2]) + 1];
 				strcpy(*inputFileName,arguments[2]);
 			}
 			else{
@@ -57,7 +59,7 @@ int argumentManagement( int argNum, char const **arguments, char **inputFileName
 				if( arg1_ok == 1 ){ /* Cannot give 2 times -i docfile */
 
 					if( *inputFileName != NULL ){
-						free(*inputFileName);
+						delete(*inputFileName);
 						*inputFileName = NULL;
 					}
 
@@ -73,7 +75,7 @@ int argumentManagement( int argNum, char const **arguments, char **inputFileName
 				}
 
 				if( *inputFileName == NULL ){
-					*inputFileName = malloc( (strlen(arguments[i]) + 1) * sizeof(char) );
+					*inputFileName = new char [strlen(arguments[i]) + 1];
 					strcpy(*inputFileName,arguments[i]);
 				}
 				else{

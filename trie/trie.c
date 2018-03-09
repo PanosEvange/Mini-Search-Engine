@@ -1,8 +1,14 @@
 /**************************************************************************
 Source file	: trie.c
 Programmer	: PANAGIOTIS EVANGELIOU  AM:1115201500039
-Description	: >
-			  >
+Description	: > trie_Init :
+			  > trie_Destroy :
+			  > trie_Insert :
+			  > trie_GetPostList :
+			  > trie_PrintAllDf :
+			  > trie_PrintSpecificDf :
+			  > trie_PrintTermFreq :
+			  > trie_IsEmpty :
 			  >
 			  >
 
@@ -46,7 +52,7 @@ int trie_Insert( trie_Header *header, char *wordToInsert, int docId ){
 
 	trie_FinalNode **currentFinal;
 	trie_Node **currentNonFinal;
-	
+
 	docInfo infoToInsert;
 	infoToInsert.id = docId;
 	infoToInsert.termFrequency = 1;
@@ -78,8 +84,10 @@ int trie_Insert( trie_Header *header, char *wordToInsert, int docId ){
 				return -3;
 			}
 
+			/* VVVVVVVVVVV FOR DEBUGGING VVVVVVVVVV */
 			printf("h PL einai: \n" );
 			PL_Print((*currentFinal)->myPostList);
+			/* ^^^^^^^^^^ FOR DEBUGGING ^^^^^^^^^^^^ */
 
 		}
 		else{ /* firstNode will be a non final trie_Node */
@@ -141,6 +149,15 @@ int trie_Insert( trie_Header *header, char *wordToInsert, int docId ){
 
 	}
 	else{
+
+		if( header->firstFinal == 1 ){
+			currentFinal = (trie_FinalNode **) &(header->firstNode);
+
+		}
+		else{
+			currentNonFinal = (trie_Node **) &(header->firstNode);
+			
+		}
 
 	}
 
