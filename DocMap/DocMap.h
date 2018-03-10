@@ -31,9 +31,9 @@ public:
 		DocMap( int num_of_docs );
 		~DocMap();
 		int InsertDoc( char *doc_to_insert, int index );
-		int PrintDoc(  Words *words_to_highlight, int index, char *special_info );
+		int PrintDoc(  Words &words_to_highlight, int index, char *special_info );
 		bool IsIndexIn( int index_to_check );
-		int HighlightText( char *original, char **highlighting_string, Words *words_to_highlight );
+		int HighlightText( char *original, char **highlighting_string, Words &words_to_highlight );
 		int PrintHighlightedText( char *text, char *highlighting_string, char *special_info );
 		int GetSize();
 };

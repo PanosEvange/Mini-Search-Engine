@@ -28,9 +28,10 @@ Description	: 		Words
 using namespace std;
 
 /* Initialize Words data structure */
-Words::Words( int n ){
+Words::Words( int n )
+:num_of_words(n)
+{
 
-	num_of_words = n;
 	words_map = new char* [ n ];
 
 	for( int i = 0; i < num_of_words; i++ ){
@@ -103,9 +104,10 @@ bool Words::IsWordIn( char *word_to_check ){
 }
 
 /* Initialize DocMap data structure */
-DocMap::DocMap( int num_of_docs ){
+DocMap::DocMap( int num_of_docs )
+:size(num_of_docs)
+{
 
-	size = num_of_docs;
 	map = new char* [ size ];
 
 	for( int i = 0; i < size; i++ ){
@@ -148,7 +150,7 @@ int DocMap::InsertDoc( char *doc_to_insert, int index ){
 }
 
 /* Print document with index id and highlight the words_to_highlight Words */
-int DocMap::PrintDoc( Words *words_to_highlight, int index, char *special_info ){
+int DocMap::PrintDoc( Words &words_to_highlight, int index, char *special_info ){
 
 	char *highlighting_string = NULL;
 
@@ -175,7 +177,7 @@ bool DocMap::IsIndexIn( int index_to_check ){
 }
 
 /* Constructing highlighting_string given original string, words to highlight and special info string */
-int DocMap::HighlightText( char *original, char **highlighting_string, Words *words_to_highlight ){
+int DocMap::HighlightText( char *original, char **highlighting_string, Words &words_to_highlight ){
 
 	char *word;
 	int offset,offset_original;
@@ -205,7 +207,7 @@ int DocMap::HighlightText( char *original, char **highlighting_string, Words *wo
 			offset_original++;
 		}
 
-		if( words_to_highlight->IsWordIn(word) ){ /* Write ^^^^ */
+		if( words_to_highlight.IsWordIn(word) ){ /* Write ^^^^ */
 
 			memset((*highlighting_string) + offset,'^',strlen(word));
 			offset += strlen(word);
