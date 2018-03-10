@@ -12,7 +12,7 @@ Description	: > Management of arguments
 #include <iostream>
 using namespace std;
 
-#include "../manageFuns/manageFuns.h"
+#include "../ManageFuns/ManageFuns.h"
 
 
 int main(int argc, char const *argv[]) {
