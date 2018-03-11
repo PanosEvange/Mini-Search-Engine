@@ -3,41 +3,64 @@
 using namespace std;
 
 #include "PostingList.h"
-#include "DocInfo.h"
 
 int main(int argc, char const *argv[]) {
 
 	PostingList myPostList;
-	DocInfo tempDocInfo(0,1);
 
-	myPostList.InsertAtEnd(tempDocInfo);
-	myPostList.IncrLastTermFreq();
+	myPostList.Insert(0);
+	myPostList.Insert(0);
+	myPostList.Insert(0);
 
-	tempDocInfo.SetId(1);
-	tempDocInfo.SetTermFreq(10);
-	myPostList.InsertAtEnd(tempDocInfo);
-	myPostList.IncrLastTermFreq();
+	myPostList.Insert(1);
+	myPostList.Insert(1);
+	myPostList.Insert(1);
+	myPostList.Insert(1);
+	myPostList.Insert(1);
 
-	tempDocInfo.SetId(2);
-	tempDocInfo.SetTermFreq(100);
-	myPostList.InsertAtEnd(tempDocInfo);
-	myPostList.IncrLastTermFreq();
+	myPostList.Insert(2);
+	myPostList.Insert(2);
+	myPostList.Insert(2);
+	myPostList.Insert(2);
+	myPostList.Insert(2);
+	myPostList.Insert(2);
+	myPostList.Insert(2);
 
-	tempDocInfo.SetId(3);
-	tempDocInfo.SetTermFreq(1000);
-	myPostList.InsertAtEnd(tempDocInfo);
-	myPostList.IncrLastTermFreq();
+	myPostList.Insert(3);
+	myPostList.Insert(3);
+	myPostList.Insert(3);
+	myPostList.Insert(3);
+	myPostList.Insert(3);
+	myPostList.Insert(3);
+	myPostList.Insert(3);
+	myPostList.Insert(3);
+	myPostList.Insert(3);
 
-	tempDocInfo.SetId(7);
-	tempDocInfo.SetTermFreq(10000);
-	myPostList.InsertAtEnd(tempDocInfo);
-	myPostList.IncrLastTermFreq();
+	myPostList.Insert(7);
+	myPostList.Insert(7);
+	myPostList.Insert(7);
+	myPostList.Insert(7);
+	myPostList.Insert(7);
+	myPostList.Insert(7);
+	myPostList.Insert(7);
+	myPostList.Insert(7);
+	myPostList.Insert(7);
+	myPostList.Insert(7);
+	myPostList.Insert(7);
 
-	tempDocInfo.SetId(9);
-	tempDocInfo.SetTermFreq(100000);
-	myPostList.InsertAtEnd(tempDocInfo);
-	myPostList.IncrLastTermFreq();
-
+	myPostList.Insert(9);
+	myPostList.Insert(9);
+	myPostList.Insert(9);
+	myPostList.Insert(9);
+	myPostList.Insert(9);
+	myPostList.Insert(9);
+	myPostList.Insert(9);
+	myPostList.Insert(9);
+	myPostList.Insert(9);
+	myPostList.Insert(9);
+	myPostList.Insert(9);
+	myPostList.Insert(9);
+	myPostList.Insert(9);
 
 	cout << "termFrequency of docId 2 is " << myPostList.GetTermFreq(2) << endl;
 	cout << "termFrequency of docId 5 is " << myPostList.GetTermFreq(5) << endl;

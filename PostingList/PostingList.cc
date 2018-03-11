@@ -61,28 +61,37 @@ PostingList::~PostingList(){
 
 }
 
-/* Insert infoToInsert docInfo at the end of given posting list */
-int PostingList::InsertAtEnd( const DocInfo &to_insert ){
+/* Insert new node if there is no doc_info about doc_id_to_insert, else increase term frequency for this doc_id */
+void PostingList::Insert( int doc_id_to_insert ){
 
 	PL_Node *temp;
+	DocInfo temp_doc_info(doc_id_to_insert,1);
 
-	if( IsEmpty() ){
+	if( IsEmpty() ){ /* This is the first doc_id for this word */
 
-		first = new PL_Node(to_insert);
+		first = new PL_Node(temp_doc_info);
 		last = first;
 		doc_frequency ++;
 
 	}
-	else{
+	else{ /* This is not the first doc_id for this word */
 
-		temp = new PL_Node(to_insert);
-		last->SetNext(temp);
-		last = temp;
-		doc_frequency ++;
+		if( last->GetId() == doc_id_to_insert ){ /* There is already doc_info about this doc_id */
+
+			last->IncreaseTermFreq();
+
+		}
+		else{ /* There is no doc_info about this doc_id */
+
+			temp = new PL_Node(temp_doc_info);
+			last->SetNext(temp);
+			last = temp;
+			doc_frequency ++;
+
+		}
 
 	}
 
-	return 1;
 }
 
 /* Return docFrequency of given posting list */
@@ -92,17 +101,6 @@ int PostingList::GetDocFrequency(){
 
 bool PostingList::IsEmpty(){
 	return ( first == NULL );
-}
-
-/* Increment of termFrequency of last node of given posting list */
-int PostingList::IncrLastTermFreq(){
-
-	if( IsEmpty() ){
-		return -1;
-	}
-
-	last->IncreaseTermFreq();
-	return 1;
 }
 
 /* For debugging purposes */

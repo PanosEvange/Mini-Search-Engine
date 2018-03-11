@@ -35,10 +35,9 @@ private:
 public:
 		PostingList();
 		~PostingList();
-		int InsertAtEnd( const DocInfo &to_insert );
+		void Insert( int doc_id_to_insert );
 		int GetDocFrequency();
 		bool IsEmpty();
-		int IncrLastTermFreq();
 		void Print();
 		int GetTermFreq( int doc_id );
 
