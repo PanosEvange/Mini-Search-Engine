@@ -68,6 +68,7 @@ public:
 		Trie();
 		~Trie();
 		void Insert( char *word_to_insert, int doc_id_to_insert );
+		TrieNode* FindChild( char letter, TrieNode *current  );
 		bool IsEmpty();
 		PostingList* GetPostList( char *word_to_find );
 		void PrintAllDf();

@@ -131,6 +131,10 @@ Trie::~Trie(){
 void Trie::Insert( char *word_to_insert, int doc_id_to_insert ){
 
 	TrieNode *current;
+	TrieNode *child;
+	TrieNode *temp;
+
+	int i;
 
 	if( IsEmpty() ){
 		InsertFirstWord(word_to_insert,doc_id_to_insert);
@@ -147,6 +151,75 @@ void Trie::Insert( char *word_to_insert, int doc_id_to_insert ){
 	}
 	else{
 
+		if( strlen(word_to_insert) == 1 ){
+			//special case for one letter/symbol
+		}
+
+		current = first;
+		for( i = 0; i < (strlen(word_to_insert) - 1); i++ ){
+
+			child = FindChild(word_to_insert[i],current);
+
+			if( child == NULL ){
+				//FULL new nodes for remaining letters should install AT current->child
+				//first new node should point as next to previous current->child node
+				//BREAK
+			}
+			else if( word_to_insert[i] > child->GetSymbol() ){
+				//FULL new nodes for remaining letters should install AT child->next
+				//new first node should point as next to previous child->next node
+				//BREAK
+			}
+			else{ //word_to_insert[i] == child->GetSymbol()
+				current = child;
+			}
+
+		}
+
+		//IF FOR DIDNT BREAK, WE CONTINUE HERE ELSE, WE HAVE ALREADY MAKEN OUR FINAL NODE
+		/* Find child for last letter so as to make FinalTrieNode */
+		child = FindChild(word_to_insert[strlen(word_to_insert) - 1],current);
+
+	}
+
+}
+
+/*  */
+TrieNode* Trie::FindChild( char letter, TrieNode *current  ){
+
+	char next_symbol;
+
+	if( current = NULL ){
+		return NULL;
+	}
+	else if( letter == current->GetSymbol() ){
+		return current;
+	}
+	else if( letter < current->GetSymbol() ){
+		return NULL;
+	}
+	else{
+		while(1){
+
+			if( current->GetNext() == NULL ){
+				return current;
+			}
+			else{
+
+				next_symbol = current->GetNext()->GetSymbol();
+				if( letter < next_symbol ){
+					return current;
+				}
+				else if( letter == next_symbol ){
+					return current->GetNext();
+				}
+				else{
+					current = current->GetNext();
+				}
+
+			}
+
+		}
 	}
 
 }
