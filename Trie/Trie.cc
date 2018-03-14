@@ -135,7 +135,7 @@ void Trie::Insert( char *word_to_insert, int doc_id_to_insert ){
 	TrieNode *previous_of_child;
 	TrieNode *temp;
 
-	int i;
+	int i,rv;
 
 	if( IsEmpty() ){
 		InsertFirstWord(word_to_insert,doc_id_to_insert);
@@ -154,15 +154,99 @@ void Trie::Insert( char *word_to_insert, int doc_id_to_insert ){
 	else{
 
 		if( strlen(word_to_insert) == 1 ){
-			//call FindFirstFinalChild() and make a switch case for its return value
+
+			/* We have only one final node which should be inserted ( or increase its PostingList )
+			   if exists ) at the "first level" of children nodes */
+			rv = FindFirstFinalChild(word_to_insert[0],previous_of_child);
+			switch (rv) {
+				case 0:	/* Check if first node is already final node, else make it final node */
+						break;
+				case 1: /* A new final node should be inserted as first node */
+						break;
+				case 2:
+						/* A new final node should be inserted as next of previous_of_child */
+						break;
+				case 3:
+						/* Check if next of previous_of_child is already final node, else make it final node */
+						break;
+			}
 
 		}
 		else{
-			//call FindFirstChild
-			//make switch case for its return value
-			//current = firstLetterPos()
-			//for i=1 to <strlen-1 findChild and do suitable actions
-			//FindFinalChild for word[strlen-1]
+
+			/* Find the position/child of first letter */
+			child = FindFirstChild(word_to_insert[0]);
+			if( child == NULL ){
+				/* Insert new node as first node */
+
+				/* Then insert NonFinalTrieNodes as children of first node
+					for all letters except last letter */
+
+				/* Insert finalNode for last letter */
+
+			}
+			else{
+				/* We found child which may have symbol == word_to_insert[0] or
+				 	symbol < word_to_insert[0] but child->next symbol > word_to_insert[0] , if
+					child->next node exists */
+				/* So there are 2 options */
+				if( word_to_insert[0] > child->GetSymbol() ){
+					/* Insert new node as child->next */
+
+					/* Then insert NonFinalTrieNodes as children of this new node
+						for all letters except last letter */
+
+					/* Insert finalNode for last letter */
+
+				}
+				else if( word_to_insert[0] == child->GetSymbol() ){
+
+					/* Move to this child */
+					current = child;
+
+					/* Then call FindChild for all other letters except last letter */
+					for( i = 1; i < strlen(word_to_insert-1); i++ ){
+
+						child = FindChild(word_to_insert[i],current);
+						if( child == NULL ){
+							/* Insert new node as first child */
+
+							//current = new node / first child
+							break;
+						}
+						else{
+							/* We found child which may have symbol == word_to_insert[0] or
+							 	symbol < word_to_insert[0] but child->next symbol > word_to_insert[0] , if
+								child->next node exists */
+							/* So there are 2 options */
+							if( word_to_insert[0] > child->GetSymbol() ){
+								/* Insert new node as child->next */
+
+								//current = new node/ child->next
+								break;
+							}
+							else if( word_to_insert[0] == child->GetSymbol() ){
+								current = child;
+								/* Go on to next i */
+							}
+						}
+					}
+
+					if( i < strlen(word_to_insert-1) ){
+						/* We should insert NonFinalTrieNodes as childen of current node
+						 	for remaining letters and final node for last letter */
+
+						/* We dont have to call FindFinalChild */
+					}
+					else{
+						/* We should only insert final node for last letter */
+						/* So we need to call FindFinalChild */
+					}
+
+
+				}
+
+			}
 
 		}
 
@@ -322,7 +406,7 @@ TrieNode* Trie::FindFirstChild( char letter ){
 	if( letter == first->GetSymbol() ){ /* Move to this child */
 		return first;
 	}
-	else if( letter < first->GetSymbol() ){ /* Insert new node as first child */
+	else if( letter < first->GetSymbol() ){ /* Insert new node as first child/node */
 		return NULL;
 	}
 	else{ //letter > first->GetSymbol()
