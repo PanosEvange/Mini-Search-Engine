@@ -664,14 +664,12 @@ PostingList* Trie::GetPostList( char *word_to_find ){
 	}
 
 	to_compare = first;
-	//cout << "Mpike edw gia word_to_find na einai " << word_to_find << endl;
+
 	for( int i = 0; i < ( (int) (strlen(word_to_find) - 1) ); i++ ){
-		//cout << "Mpike edw No1 gia word_to_find na einai " << word_to_find << endl;
+
 		while( to_compare != NULL ){
-			//cout << "Mpike edw No1-1 gia word_to_find na einai " << word_to_find << endl;
+
 			if( word_to_find[i] < to_compare->GetSymbol() ){ /* Our trie is sorted from smaller ascii code to bigger ascii code */
-				//cout << "Mpike edw No1-2 gia word_to_find na einai " << word_to_find << endl;
-				//cout << "Giati to word_to_find[i] " << word_to_find[i] << " einai < toy to_compare->GetSymbol " << to_compare->GetSymbol() << endl;
 				/* word_to_find doesn't exist in our trie  */
 				return NULL;
 			}
@@ -691,7 +689,6 @@ PostingList* Trie::GetPostList( char *word_to_find ){
 	}
 
 	/* Now we need to check for the last letter of the word */
-	//to_compare = to_compare->GetChild();
 	while( to_compare != NULL ){
 
 		if( word_to_find[strlen(word_to_find) - 1] < to_compare->GetSymbol() ){ /* Our trie is sorted from smaller ascii code to bigger ascii code */
