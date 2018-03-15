@@ -281,12 +281,16 @@ void Trie::Insert( char *word_to_insert, int doc_id_to_insert ){
 			child = FindFirstChild(word_to_insert[0]);
 			if( child == NULL ){
 				/* Insert new node as first node */
-
+				temp = new NonFinalTrieNode( word_to_insert[0] );
+				temp->SetNext(first);
+				first = temp;
 				/* Then insert NonFinalTrieNodes as children of first node
 					for all letters except last letter */
-
+				current = InsertNonFinalNodes( word_to_insert, 1, first );
 				/* Insert finalNode for last letter */
-
+				temp = new FinalTrieNode( word_to_insert[strlen(word_to_insert)-1] );
+				temp->InsertDocId(doc_id_to_insert);
+				current->SetChild(temp);
 			}
 			else{
 				/* We found child which may have symbol == word_to_insert[0] or
@@ -295,55 +299,113 @@ void Trie::Insert( char *word_to_insert, int doc_id_to_insert ){
 				/* So there are 2 options */
 				if( word_to_insert[0] > child->GetSymbol() ){
 					/* Insert new node as child->next */
-
+					temp = new NonFinalTrieNode( word_to_insert[0] );
+					temp->SetNext(child->GetNext());
+					child->SetNext(temp);
 					/* Then insert NonFinalTrieNodes as children of this new node
 						for all letters except last letter */
-
+					current = InsertNonFinalNodes( word_to_insert, 1, child->GetNext() );
 					/* Insert finalNode for last letter */
-
+					temp = new FinalTrieNode( word_to_insert[strlen(word_to_insert)-1] );
+					temp->InsertDocId(doc_id_to_insert);
+					current->SetChild(temp);
 				}
 				else if( word_to_insert[0] == child->GetSymbol() ){
-
 					/* Move to this child */
 					current = child;
 
 					/* Then call FindChild for all other letters except last letter */
-					for( i = 1; i < ( (int) strlen(word_to_insert-1) ); i++ ){
-
+					for( i = 1; i < ( (int) strlen(word_to_insert) - 1 ); i++ ){
 						child = FindChild(word_to_insert[i],current);
 						if( child == NULL ){
 							/* Insert new node as first child */
-
-							//current = new node / first child
+							temp = new NonFinalTrieNode( word_to_insert[i] );
+							if( current->GetChild() != NULL ){
+								temp->SetNext(current->GetChild());
+							}
+							current->SetChild(temp);
+							current = current->GetChild();
 							break;
 						}
 						else{
 							/* We found child which may have symbol == word_to_insert[0] or
-							 	symbol < word_to_insert[0] but child->next symbol > word_to_insert[0] , if
+								symbol < word_to_insert[0] but child->next symbol > word_to_insert[0] , if
 								child->next node exists */
 							/* So there are 2 options */
-							if( word_to_insert[0] > child->GetSymbol() ){
+							if( word_to_insert[i] > child->GetSymbol() ){
 								/* Insert new node as child->next */
-
-								//current = new node/ child->next
+								temp = new NonFinalTrieNode( word_to_insert[i] );
+								temp->SetNext(child->GetNext());
+								child->SetNext(temp);
+								current = child->GetNext();
 								break;
 							}
-							else if( word_to_insert[0] == child->GetSymbol() ){
+							else if( word_to_insert[i] == child->GetSymbol() ){
 								current = child;
 								/* Go on to next i */
 							}
 						}
 					}
 
-					if( i < ((int) strlen(word_to_insert-1)) ){
+					if( i < ((int) (strlen(word_to_insert)-1)) ){
 						/* We should insert NonFinalTrieNodes as childen of current node
-						 	for remaining letters and final node for last letter */
-
+							for remaining letters and final node for last letter */
+						current = InsertNonFinalNodes( word_to_insert, i+1, current );
 						/* We dont have to call FindFinalChild */
+						temp = new FinalTrieNode( word_to_insert[strlen(word_to_insert)-1] );
+						temp->InsertDocId(doc_id_to_insert);
+						current->SetChild(temp);
 					}
 					else{
 						/* We should only insert final node for last letter */
 						/* So we need to call FindFinalChild */
+						rv = FindFinalChild(word_to_insert[strlen(word_to_insert)-1],current,previous_of_child);
+						switch (rv) {
+							case 0:	/* New finalNode should be inserted as first child of previous_of_child */
+									temp = new FinalTrieNode( word_to_insert[strlen(word_to_insert)-1] );
+									temp->InsertDocId(doc_id_to_insert);
+									if( previous_of_child->GetChild() != NULL ){
+										temp->SetNext(previous_of_child->GetChild());
+									}
+									previous_of_child->SetChild(temp);
+									break;
+							case 1: /* Check if previous_of_child->GetChild is final,else make it final */
+									if( previous_of_child->GetChild()->GetPostList() == NULL ){ /* It is not a final node */
+										/* Convert it to final node */
+										temp = new FinalTrieNode( previous_of_child->GetChild()->GetSymbol() );
+										temp->SetNext( previous_of_child->GetChild()->GetNext() );
+										temp->SetChild( previous_of_child->GetChild()->GetChild() );
+										temp->InsertDocId(doc_id_to_insert);
+										delete previous_of_child->GetChild();
+										previous_of_child->SetChild(temp);
+									}
+									else{
+										/* It is already a final node so just insert this doc_id_to_insert */
+										previous_of_child->GetChild()->InsertDocId(doc_id_to_insert);
+									}
+									break;
+							case 2: /* A new final node should be inserted as next of previous_of_child */
+									temp = new FinalTrieNode( word_to_insert[strlen(word_to_insert)-1] );
+									temp->InsertDocId(doc_id_to_insert);
+									temp->SetNext(previous_of_child->GetNext());
+									previous_of_child->SetNext(temp);
+									break;
+							case 3: /* Check if next of previous_of_child is already final node, else make it final node */
+									if( previous_of_child->GetNext()->GetPostList() == NULL ){ /* It is not a final node */
+										/* Convert it to final node */
+										temp = new FinalTrieNode( previous_of_child->GetNext()->GetSymbol() );
+										temp->SetNext( previous_of_child->GetNext()->GetNext() );
+										temp->SetChild( previous_of_child->GetNext()->GetChild() );
+										temp->InsertDocId(doc_id_to_insert);
+										delete previous_of_child->GetNext();
+										previous_of_child->SetNext(temp);
+									}
+									else{
+										/* It is already a final node so just insert this doc_id_to_insert */
+										previous_of_child->GetNext()->InsertDocId(doc_id_to_insert);
+									}
+									break;
+						}
 					}
 
 
