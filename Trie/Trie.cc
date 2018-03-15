@@ -7,6 +7,7 @@ Description	:
 
 #include <iostream>
 #include <cstring>
+#include <cstdio>
 
 using namespace std;
 
@@ -73,6 +74,10 @@ void TrieNode::InsertDocId( int doc_id_to_insert ){
 
 }
 
+int TrieNode::Print( char* word_so_far ){
+	return -1;
+}
+
 NonFinalTrieNode::NonFinalTrieNode( char symbol_to_set )
 :TrieNode(symbol_to_set)
 {
@@ -80,6 +85,33 @@ NonFinalTrieNode::NonFinalTrieNode( char symbol_to_set )
 }
 
 NonFinalTrieNode::~NonFinalTrieNode(){
+
+}
+
+int NonFinalTrieNode::Print( char* word_so_far ){
+
+	char *new_word;
+
+	if( word_so_far == NULL ){ /* I am the first child/letter */
+		/* So my symbol will be the first symbol for this word_so_far */
+		new_word = new char[2];
+		sprintf(new_word,"%c",GetSymbol());
+	}
+	else{
+		new_word = new char[strlen(word_so_far)+2];
+		strcat(new_word,word_so_far);
+	}
+
+	if( GetChild() != NULL ){
+		GetChild()->Print(new_word);
+	}
+
+	if( GetNext() != NULL ){
+		GetNext()->Print(word_so_far);
+	}
+
+	delete[] new_word;
+	return 1;
 
 }
 
@@ -114,6 +146,36 @@ void FinalTrieNode::InsertDocId( int doc_id_to_insert ){
 	my_post_list->Insert(doc_id_to_insert);
 }
 
+int FinalTrieNode::Print( char* word_so_far ){
+
+	char *new_word;
+
+	if( word_so_far == NULL ){ /* I am the first child/letter */
+		/* So my symbol will be the first symbol for this word_so_far */
+		new_word = new char[2];
+		sprintf(new_word,"%c",GetSymbol());
+	}
+	else{
+		new_word = new char[strlen(word_so_far)+2];
+		strcat(new_word,word_so_far);
+	}
+
+	/* I am a final Node so print new_word and df */
+	cout << new_word << " " << my_post_list->GetDocFrequency() << endl;
+
+	if( GetChild() != NULL ){
+		GetChild()->Print(new_word);
+	}
+
+	if( GetNext() != NULL ){
+		GetNext()->Print(word_so_far);
+	}
+
+	delete[] new_word;
+	return 1;
+
+}
+
 Trie::Trie()
 :first(NULL),total_words(0)
 {
@@ -140,16 +202,16 @@ void Trie::Insert( char *word_to_insert, int doc_id_to_insert ){
 	if( IsEmpty() ){
 		InsertFirstWord(word_to_insert,doc_id_to_insert);
 
-		/* VVVVVVVVVVV FOR DEBUGGING VVVVVVVVVV */
-		current = first;
-		while( current->GetChild() != NULL ){
-			cout << current->GetSymbol() << " - ";
-			current = current->GetChild();
-		}
-		//we reached final node
-		cout << current->GetSymbol() << endl;
-		current->PrintPL();
-		/* ^^^^^^^^^^ FOR DEBUGGING ^^^^^^^^^^^^ */
+		// /* VVVVVVVVVVV FOR DEBUGGING VVVVVVVVVV */
+		// current = first;
+		// while( current->GetChild() != NULL ){
+		// 	cout << current->GetSymbol() << " - ";
+		// 	current = current->GetChild();
+		// }
+		// //we reached final node
+		// cout << current->GetSymbol() << endl;
+		// current->PrintPL();
+		// /* ^^^^^^^^^^ FOR DEBUGGING ^^^^^^^^^^^^ */
 	}
 	else{
 
@@ -160,14 +222,36 @@ void Trie::Insert( char *word_to_insert, int doc_id_to_insert ){
 			rv = FindFirstFinalChild(word_to_insert[0],previous_of_child);
 			switch (rv) {
 				case 0:	/* Check if first node is already final node, else make it final node */
+						if( first->GetPostList() == NULL ){ /* It is not a final node */
+							/* Convert it to final node */
+
+						}
+						else{
+							/* It is already a final node so just insert this doc_id_to_insert */
+							first->InsertDocId(doc_id_to_insert);
+						}
 						break;
 				case 1: /* A new final node should be inserted as first node */
+						temp = new FinalTrieNode( word_to_insert[0] );
+						temp->InsertDocId(doc_id_to_insert);
+						temp->SetNext(first);
+						first = temp;
 						break;
-				case 2:
-						/* A new final node should be inserted as next of previous_of_child */
+				case 2: /* A new final node should be inserted as next of previous_of_child */
+						temp = new FinalTrieNode( word_to_insert[0] );
+						temp->InsertDocId(doc_id_to_insert);
+						temp->SetNext(previous_of_child->GetNext());
+						previous_of_child->SetNext(temp);
 						break;
-				case 3:
-						/* Check if next of previous_of_child is already final node, else make it final node */
+				case 3: /* Check if next of previous_of_child is already final node, else make it final node */
+						if( previous_of_child->GetNext()->GetPostList() == NULL ){ /* It is not a final node */
+							/* Convert it to final node */
+
+						}
+						else{
+							/* It is already a final node so just insert this doc_id_to_insert */
+							previous_of_child->GetNext()->InsertDocId(doc_id_to_insert);
+						}
 						break;
 			}
 
@@ -205,7 +289,7 @@ void Trie::Insert( char *word_to_insert, int doc_id_to_insert ){
 					current = child;
 
 					/* Then call FindChild for all other letters except last letter */
-					for( i = 1; i < strlen(word_to_insert-1); i++ ){
+					for( i = 1; i < ( (int) strlen(word_to_insert-1) ); i++ ){
 
 						child = FindChild(word_to_insert[i],current);
 						if( child == NULL ){
@@ -232,7 +316,7 @@ void Trie::Insert( char *word_to_insert, int doc_id_to_insert ){
 						}
 					}
 
-					if( i < strlen(word_to_insert-1) ){
+					if( i < ((int) strlen(word_to_insert-1)) ){
 						/* We should insert NonFinalTrieNodes as childen of current node
 						 	for remaining letters and final node for last letter */
 
@@ -440,6 +524,21 @@ TrieNode* Trie::FindFirstChild( char letter ){
 
 }
 
+/* Insert NonFinalTrieNodes for each letter ( beggining from word_to_insert[start] to word_to_insert[strlen-2] ), starting from current->child */
+TrieNode* Trie::InsertNonFinalNodes( char *word_to_insert, int start, TrieNode* current ){
+
+	TrieNode *temp;
+
+	for( int i = start; i < ( (int) (strlen(word_to_insert) - 1) ); i++  ){
+		temp = new NonFinalTrieNode( word_to_insert[i] );
+		current->SetChild(temp);
+		current = temp;
+	}
+
+	return current;
+
+}
+
 void Trie::InsertFirstWord( char *word_to_insert, int doc_id_to_insert ){
 
 	TrieNode *current;
@@ -480,7 +579,7 @@ PostingList* Trie::GetPostList( char *word_to_find ){
 }
 
 void Trie::PrintAllDf(){
-
+	first->Print();
 }
 
 void Trie::PrintSpecificDf( char *word_to_print ){
