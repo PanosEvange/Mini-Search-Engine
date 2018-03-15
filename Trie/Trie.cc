@@ -656,17 +656,99 @@ bool Trie::IsEmpty(){
 }
 
 PostingList* Trie::GetPostList( char *word_to_find ){
+
+	TrieNode *to_compare;
+
+	if( IsEmpty() ){
+		return NULL;
+	}
+
+	to_compare = first;
+	//cout << "Mpike edw gia word_to_find na einai " << word_to_find << endl;
+	for( int i = 0; i < ( (int) (strlen(word_to_find) - 1) ); i++ ){
+		//cout << "Mpike edw No1 gia word_to_find na einai " << word_to_find << endl;
+		while( to_compare != NULL ){
+			//cout << "Mpike edw No1-1 gia word_to_find na einai " << word_to_find << endl;
+			if( word_to_find[i] < to_compare->GetSymbol() ){ /* Our trie is sorted from smaller ascii code to bigger ascii code */
+				//cout << "Mpike edw No1-2 gia word_to_find na einai " << word_to_find << endl;
+				//cout << "Giati to word_to_find[i] " << word_to_find[i] << " einai < toy to_compare->GetSymbol " << to_compare->GetSymbol() << endl;
+				/* word_to_find doesn't exist in our trie  */
+				return NULL;
+			}
+			else if( word_to_find[i] == to_compare->GetSymbol() ){ /* Go to next letter */
+				to_compare = to_compare->GetChild();
+				break;
+			}
+
+			to_compare = to_compare->GetNext();
+
+		}
+
+		if( to_compare == NULL ){
+			return NULL;
+		}
+
+	}
+
+	/* Now we need to check for the last letter of the word */
+	//to_compare = to_compare->GetChild();
+	while( to_compare != NULL ){
+
+		if( word_to_find[strlen(word_to_find) - 1] < to_compare->GetSymbol() ){ /* Our trie is sorted from smaller ascii code to bigger ascii code */
+			/* word_to_find doesn't exist in our trie  */
+			return NULL;
+		}
+		else if( word_to_find[strlen(word_to_find) - 1] == to_compare->GetSymbol() ){ /* Go to next letter */
+			return to_compare->GetPostList();
+		}
+
+		to_compare = to_compare->GetNext();
+
+	}
+
 	return NULL;
+
 }
 
 void Trie::PrintAllDf(){
 	first->Print();
 }
 
-void Trie::PrintSpecificDf( char *word_to_print ){
+int Trie::PrintSpecificDf( char *word_to_print ){
 
+	PostingList* useful_PL;
+
+	useful_PL = GetPostList(word_to_print);
+
+	if( useful_PL == NULL ){ /* word_to_print not found */
+		cout << "Word " << word_to_print << " not found!" << endl;
+		return -1;
+	}
+
+	cout << word_to_print << " " << useful_PL->GetDocFrequency() << endl;
+	return 1;
 }
 
-void Trie::PrintTermFreq( char *word_to_print, int doc_id_to_print ){
+int Trie::PrintTermFreq( char *word_to_print, int doc_id_to_print ){
 
+	PostingList* useful_PL;
+	int term_frequency;
+
+	useful_PL = GetPostList(word_to_print);
+
+	if( useful_PL == NULL ){ /* word_to_print not found */
+		cout << "Word " << word_to_print << " not found!" << endl;
+		return -1;
+	}
+
+	term_frequency = useful_PL->GetTermFreq(doc_id_to_print);
+
+	if( term_frequency == -1 ){
+		cout << "There is no word " << word_to_print << " in document with id " << doc_id_to_print << endl;
+		return -1;
+	}
+
+	cout << doc_id_to_print << " " << word_to_print << " " << term_frequency << endl;
+
+	return 1;
 }

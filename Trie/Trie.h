@@ -71,15 +71,16 @@ private:
 		int FindFinalChild( char letter, TrieNode *current, TrieNode* &previous_of_child  );
 		int FindFirstFinalChild( char letter, TrieNode* &previous_of_child  );
 		TrieNode* FindFirstChild( char letter );
+
 public:
 		Trie();
 		~Trie();
 		void Insert( char *word_to_insert, int doc_id_to_insert );
 		bool IsEmpty();
-		PostingList* GetPostList( char *word_to_find );
 		void PrintAllDf();
-		void PrintSpecificDf( char *word_to_print );
-		void PrintTermFreq( char *word_to_print, int doc_id_to_print );
+		int PrintSpecificDf( char *word_to_print );
+		int PrintTermFreq( char *word_to_print, int doc_id_to_print );
+		PostingList* GetPostList( char *word_to_find );
 
 };
 

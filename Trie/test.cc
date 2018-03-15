@@ -9,7 +9,7 @@ int main(int argc, char const *argv[]) {
 
 	Trie myTrie;
 
-	char *word = new char[9];
+	char word0[] = "aloha";
 	char word1[] = "The";
 	char word2[] = "quick";
 	char word3[] = "brown";
@@ -48,7 +48,18 @@ int main(int argc, char const *argv[]) {
 	myTrie.Insert(word14,1);
 
 	myTrie.PrintAllDf();
+	cout << "------------------------------------------------" << endl;
 
-	delete[] word;
+	myTrie.PrintSpecificDf(word5);
+	cout << "------------------------------------------------" << endl;
+	myTrie.PrintSpecificDf(word0);
+	cout << "------------------------------------------------" << endl;
+	myTrie.PrintTermFreq(word8,0);
+	cout << "------------------------------------------------" << endl;
+	myTrie.PrintTermFreq(word0,0);
+	cout << "------------------------------------------------" << endl;
+	myTrie.PrintTermFreq(word8,3);
+	cout << "------------------------------------------------" << endl;
+
 	return 0;
 }
