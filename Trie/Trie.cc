@@ -22,16 +22,6 @@ TrieNode::TrieNode( char symbol_to_set )
 
 TrieNode::~TrieNode(){
 
-	if( child != NULL ){
-		delete child;
-	}
-
-	if( next != NULL ){
-		delete next;
-	}
-
-	cout << "TrieNode with symbol " << symbol << " will be destroyed!" << endl;
-
 }
 
 TrieNode* TrieNode::GetChild(){
@@ -78,6 +68,26 @@ int TrieNode::Print( char* word_so_far ){
 	return -1;
 }
 
+void TrieNode::DeleteChildNext(){
+
+	if( GetChild() != NULL ){
+		GetChild()->DeleteChildNext();
+	}
+
+	if( GetNext() != NULL ){
+		GetNext()->DeleteChildNext();
+	}
+
+	if( GetChild() != NULL ){
+		delete GetChild();
+	}
+
+	if( GetNext() != NULL ){
+		delete GetNext();
+	}
+
+}
+
 NonFinalTrieNode::NonFinalTrieNode( char symbol_to_set )
 :TrieNode(symbol_to_set)
 {
@@ -91,15 +101,20 @@ NonFinalTrieNode::~NonFinalTrieNode(){
 int NonFinalTrieNode::Print( char* word_so_far ){
 
 	char *new_word;
+	int old_length;
 
 	if( word_so_far == NULL ){ /* I am the first child/letter */
 		/* So my symbol will be the first symbol for this word_so_far */
 		new_word = new char[2];
-		sprintf(new_word,"%c",GetSymbol());
+		new_word[0] = GetSymbol();
+		new_word[1] = '\0';
 	}
 	else{
-		new_word = new char[strlen(word_so_far)+2];
-		strcat(new_word,word_so_far);
+		old_length = strlen(word_so_far);
+		new_word = new char[old_length+2];
+		strcpy(new_word,word_so_far);
+		new_word[old_length] = GetSymbol();
+		new_word[old_length+1] = '\0';
 	}
 
 	if( GetChild() != NULL ){
@@ -149,15 +164,20 @@ void FinalTrieNode::InsertDocId( int doc_id_to_insert ){
 int FinalTrieNode::Print( char* word_so_far ){
 
 	char *new_word;
+	int old_length;
 
 	if( word_so_far == NULL ){ /* I am the first child/letter */
 		/* So my symbol will be the first symbol for this word_so_far */
 		new_word = new char[2];
-		sprintf(new_word,"%c",GetSymbol());
+		new_word[0] = GetSymbol();
+		new_word[1] = '\0';
 	}
 	else{
-		new_word = new char[strlen(word_so_far)+2];
-		strcat(new_word,word_so_far);
+		old_length = strlen(word_so_far);
+		new_word = new char[old_length+2];
+		strcpy(new_word,word_so_far);
+		new_word[old_length] = GetSymbol();
+		new_word[old_length+1] = '\0';
 	}
 
 	/* I am a final Node so print new_word and df */
@@ -185,6 +205,7 @@ Trie::Trie()
 Trie::~Trie(){
 
 	if( first != NULL ){
+		first->DeleteChildNext();
 		delete first;
 	}
 
@@ -201,22 +222,10 @@ void Trie::Insert( char *word_to_insert, int doc_id_to_insert ){
 
 	if( IsEmpty() ){
 		InsertFirstWord(word_to_insert,doc_id_to_insert);
-
-		// /* VVVVVVVVVVV FOR DEBUGGING VVVVVVVVVV */
-		// current = first;
-		// while( current->GetChild() != NULL ){
-		// 	cout << current->GetSymbol() << " - ";
-		// 	current = current->GetChild();
-		// }
-		// //we reached final node
-		// cout << current->GetSymbol() << endl;
-		// current->PrintPL();
-		// /* ^^^^^^^^^^ FOR DEBUGGING ^^^^^^^^^^^^ */
 	}
 	else{
 
 		if( strlen(word_to_insert) == 1 ){
-
 			/* We have only one final node which should be inserted ( or increase its PostingList )
 			   if exists ) at the "first level" of children nodes */
 			rv = FindFirstFinalChild(word_to_insert[0],previous_of_child);
@@ -224,7 +233,12 @@ void Trie::Insert( char *word_to_insert, int doc_id_to_insert ){
 				case 0:	/* Check if first node is already final node, else make it final node */
 						if( first->GetPostList() == NULL ){ /* It is not a final node */
 							/* Convert it to final node */
-
+							temp = new FinalTrieNode( first->GetSymbol() );
+							temp->SetNext( first->GetNext() );
+							temp->SetChild( first->GetChild() );
+							temp->InsertDocId(doc_id_to_insert);
+							delete first;
+							first = temp;
 						}
 						else{
 							/* It is already a final node so just insert this doc_id_to_insert */
@@ -246,7 +260,12 @@ void Trie::Insert( char *word_to_insert, int doc_id_to_insert ){
 				case 3: /* Check if next of previous_of_child is already final node, else make it final node */
 						if( previous_of_child->GetNext()->GetPostList() == NULL ){ /* It is not a final node */
 							/* Convert it to final node */
-
+							temp = new FinalTrieNode( previous_of_child->GetNext()->GetSymbol() );
+							temp->SetNext( previous_of_child->GetNext()->GetNext() );
+							temp->SetChild( previous_of_child->GetNext()->GetChild() );
+							temp->InsertDocId(doc_id_to_insert);
+							delete previous_of_child->GetNext();
+							previous_of_child->SetNext(temp);
 						}
 						else{
 							/* It is already a final node so just insert this doc_id_to_insert */

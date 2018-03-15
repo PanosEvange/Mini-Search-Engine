@@ -33,6 +33,7 @@ public:
 		virtual int GetTermFreq( int doc_id );
 		virtual void InsertDocId( int doc_id_to_insert );
 		virtual int Print( char* word_so_far = NULL );
+		void DeleteChildNext();
 };
 
 class NonFinalTrieNode : public TrieNode {
