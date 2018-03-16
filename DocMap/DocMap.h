@@ -50,6 +50,9 @@ public:
 		int HighlightText( char *original, char **highlighting_string, Words &words_to_highlight );
 		int PrintHighlightedText( char *text, char *highlighting_string, char *special_info );
 		int GetSize();
+		int SetDocCount( int index, int num_of_words );
+		int GetDocCount( int index );
+
 };
 
 #endif /* DOC_MAP_H */

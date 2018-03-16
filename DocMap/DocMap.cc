@@ -352,3 +352,25 @@ int DocMap::PrintHighlightedText( char *text, char *highlighting_string, char *s
 int DocMap::GetSize(){
 	return size;
 }
+
+int DocMap::SetDocCount( int index, int num_of_words ){
+
+	if( !IsIndexIn(index) ){
+		return -1;
+	}
+
+	docs[index]->SetWordsNum(num_of_words);
+
+	return 1;
+
+}
+
+int DocMap::GetDocCount( int index ){
+
+	if( !IsIndexIn(index) ){
+		return -1;
+	}
+
+	return docs[index]->GetWordsNum();
+
+}
