@@ -40,18 +40,6 @@ Words::Words( int n )
 
 }
 
-// Words::Words( const Words &words_to_copy ){
-//
-// 	num_of_words = words_to_copy.GetSize();
-// 	words_map = new char* [ num_of_words ];
-//
-// 	for( int i = 0; i < num_of_words; i++ ){
-// 		words_map[i] = NULL;
-// 	}
-//
-// }
-
-
 /* Destroy Words data structure */
 Words::~Words(){
 
@@ -103,15 +91,38 @@ bool Words::IsWordIn( char *word_to_check ){
 	return false;
 }
 
+Doc::Doc( char *doc_to_insert )
+:num_of_words(0)
+{
+	my_doc = new char[ strlen(doc_to_insert) + 1 ];
+	strcpy(my_doc,doc_to_insert);
+}
+
+Doc::~Doc(){
+	delete[] my_doc;
+}
+
+char* Doc::GetDoc(){
+	return my_doc;
+}
+
+int Doc::GetWordsNum(){
+	return num_of_words;
+}
+
+void Doc::SetWordsNum( int num ){
+	num_of_words = num;
+}
+
 /* Initialize DocMap data structure */
 DocMap::DocMap( int num_of_docs )
 :size(num_of_docs)
 {
 
-	map = new char* [ size ];
+	docs = new Doc* [ size ];
 
 	for( int i = 0; i < size; i++ ){
-		map[i] = NULL;
+		docs[i] = NULL;
 	}
 
 }
@@ -120,12 +131,12 @@ DocMap::DocMap( int num_of_docs )
 DocMap::~DocMap(){
 
 	for( int i = 0; i < size; i++ ){
-		if( map[i] != NULL ){
-			delete[] map[i];
+		if( docs[i] != NULL ){
+			delete docs[i];
 		}
 	}
 
-	delete[] map;
+	delete[] docs;
 
 }
 
@@ -136,10 +147,9 @@ int DocMap::InsertDoc( char *doc_to_insert, int index ){
 		return -1;
 	}
 
-	if( map[index] == NULL ){
+	if( docs[index] == NULL ){
 
-		map[index] = new char[strlen(doc_to_insert) + 1];
-		strcpy(map[index],doc_to_insert);
+		docs[index] = new Doc( doc_to_insert );
 
 	}
 	else{
@@ -158,11 +168,11 @@ int DocMap::PrintDoc( Words &words_to_highlight, int index, char *special_info )
 		return -1;
 	}
 
-	if( HighlightText(map[index], &highlighting_string, words_to_highlight) != 1 ){
+	if( HighlightText(docs[index]->GetDoc(), &highlighting_string, words_to_highlight) != 1 ){
 		return -2;
 	}
 
-	if( PrintHighlightedText( map[index], highlighting_string , special_info) != 1 ){
+	if( PrintHighlightedText( docs[index]->GetDoc(), highlighting_string , special_info) != 1 ){
 		return -4;
 	}
 

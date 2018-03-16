@@ -24,6 +24,7 @@ int main(int argc, char const *argv[]) {
 	myMap.InsertDoc(doc3,2);
 
 	myMap.PrintDoc(myWords,2,specialInfo);
+	myMap.PrintDoc(myWords,1,specialInfo);
 
 	return 0;
 }

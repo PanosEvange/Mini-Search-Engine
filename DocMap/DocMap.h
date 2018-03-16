@@ -22,11 +22,25 @@ public:
 		bool IsWordIn( char *word_to_check );
 };
 
+class Doc{
+
+private:
+		int num_of_words;
+		char *my_doc;
+public:
+		Doc( char *doc_to_insert );
+		~Doc();
+		char* GetDoc();
+		int GetWordsNum();
+		void SetWordsNum( int num );
+
+};
+
 class DocMap{
 
 private:
 		int size;
-		char **map;
+		Doc** docs;
 public:
 		DocMap( int num_of_docs );
 		~DocMap();
