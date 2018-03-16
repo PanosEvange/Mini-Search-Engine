@@ -11,6 +11,7 @@ Description :
 
 #include "../PostingList/PostingList.h"
 #include "../PostingList/DocInfo.h"
+#include <cstddef>
 
 class TrieNode{
 

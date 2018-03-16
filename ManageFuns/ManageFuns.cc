@@ -13,6 +13,7 @@ Description	: > ArgumentManagement : checks if arguments are ok and returning
 #include <cstring>
 #include <iostream>
 #include <cstdlib>
+#include <cstdio>
 
 using namespace std;
 
@@ -111,5 +112,157 @@ int ArgumentManagement( int arg_num, char const **arguments, char **input_file_n
 	else{
 		return -1;
 	}
+
+}
+
+/* Find number_of_rows of the file and check if ids are ok */
+int GetFileInfo( FileInfo &current_file_info ){
+
+	FILE* current_file;
+	char to_check;
+	int id;
+
+	current_file = fopen(current_file_info.file_name, "r");
+
+	fscanf(current_file,"%d",&id);
+	if( id != 0 ){
+		fclose(current_file);
+		return -1;
+	}
+
+	to_check = fgetc(current_file);
+	while( 1 ){
+		//printf("diabastike -%d-(%c)\n",to_check,to_check );
+		if( to_check == '\n' ){
+
+			current_file_info.number_of_rows ++;
+
+			to_check = fgetc(current_file);
+			if( to_check == EOF ){
+				break;
+			}
+
+			fscanf(current_file,"%d",&id);
+			if( id != current_file_info.number_of_rows ){
+				fclose(current_file);
+				return -1;
+			}
+
+		}
+		to_check = fgetc(current_file);
+	}
+
+
+	fclose(current_file);
+	//cout << " Last id which we read " << id << endl;
+
+	return 1;
+}
+
+/* Inserting Docs in DocMap and words in Trie */
+int InsertDocs( DocMap &current_doc_map, Trie &current_trie, FileInfo &current_file_info ){
+//int InsertDocs( FileInfo &current_file_info ){
+
+	char *init_doc = NULL;
+	char *doc;
+	size_t len = 0;
+	ssize_t read = 1;
+	int id = 0;
+	int number_of_words;
+
+	FILE* current_file;
+
+	current_file = fopen(current_file_info.file_name, "r");
+
+	read = getline(&init_doc, &len, current_file);
+	while( read != -1 ){
+		cout << "init_doc is -" << init_doc << "- with " << strlen(init_doc) << " and read is " << read  << endl;
+
+		doc = GetFinalDoc(init_doc,read-1);
+
+		cout << "final_doc is -" << doc << "- with " << strlen(doc) << endl;
+
+		/* Insert doc to DocMap at index id */
+		current_doc_map.InsertDoc(doc,id);
+
+		/* Insert words of this doc into Trie */
+		number_of_words = InsertWords(doc,id,current_trie);
+
+		//current_doc_map.InsertDocCount(number_of_words,id);
+
+		/* Prepare for next loop */
+		read = getline(&init_doc, &len, current_file);
+		delete[] doc;
+		id++;
+	}
+
+	fclose(current_file);
+	free(init_doc);
+
+	return 1;
+}
+
+/* Insert words of given doc one by one into the Trie and return the number
+	of words of given doc */
+int InsertWords( char *doc_to_split, int id, Trie &current_trie ){
+
+	int number_of_words = 0;
+	char *word_to_insert;
+
+	word_to_insert = strtok(doc_to_split," \t");
+
+	while( word_to_insert != NULL ){
+		number_of_words ++;
+		current_trie.Insert(word_to_insert,id);
+		word_to_insert = strtok(NULL," \t");
+	}
+
+	return number_of_words;
+}
+
+/* Return the substring of doc_to_format which begins
+ 	from first non-space character after id, and
+	ends at last non-space character before \n */
+char* GetFinalDoc( char *doc_to_format, int last_char_pos ){
+
+	int begin,end;
+	char *final_doc;
+	int current = 0;
+
+	/* Skip initial spaces/tabs before id */
+	while( (doc_to_format[current] == ' ') || (doc_to_format[current] == '\t') ){
+		current++;
+	}
+
+	/* Skip id */
+	while( (doc_to_format[current] != ' ') && (doc_to_format[current] != '\t') ){
+		current++;
+	}
+
+	/* Find the first non-space character after id */
+	while( (doc_to_format[current] == ' ') || (doc_to_format[current] == '\t') ){
+		current++;
+	}
+
+	begin = current;
+
+	/* at last_char_pos is \n so we need last_char_pos - 1 */
+	current = last_char_pos-1;
+
+	/* Find the last non-space character */
+	/* Begin from the second to last character ( before the \n ) and
+		go back till find a non-space character */
+	while( (doc_to_format[current] == ' ') || (doc_to_format[current] == '\t') ){
+		current--;
+	}
+
+	end = current;
+
+	final_doc = new char[ ( end - begin + 1 ) + 1 ];
+
+	memcpy(final_doc,doc_to_format+begin,end - begin + 1);
+	final_doc[end - begin + 1] = '\0';
+
+	return final_doc;
 
 }
