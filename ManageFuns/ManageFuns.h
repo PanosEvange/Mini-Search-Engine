@@ -20,7 +20,8 @@ typedef struct FileInfo{
 int ArgumentManagement( int arg_num, char const **arguments, char **input_file_name, int *k );
 int GetFileInfo( FileInfo &current_file_info );
 int InsertDocs( DocMap &current_doc_map, Trie &current_trie, FileInfo &current_file_info );
-//int InsertDocs( FileInfo &current_file_info );
 int InsertWords( char *doc_to_split, int id, Trie &current_trie );
 char* GetFinalDoc( char *doc_to_format, int last_char_pos );
+int PromptMode( DocMap &current_doc_map, Trie &current_trie );
+
 #endif /* MANAGE_H */

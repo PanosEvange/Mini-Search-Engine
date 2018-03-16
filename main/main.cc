@@ -14,15 +14,15 @@ using namespace std;
 
 #include "../ManageFuns/ManageFuns.h"
 
-
 int main(int argc, char const *argv[]) {
 
-	char* input_file_name = NULL;
 	int top_results;
 	int error;
+	FileInfo my_file_info;
+	my_file_info.number_of_rows = 0;
+	my_file_info.file_name = NULL;
 
-	error = ArgumentManagement( argc, argv, &input_file_name, &top_results );
-
+	error = ArgumentManagement( argc, argv, &my_file_info.file_name, &top_results );
 	switch (error) {
 		case -1:	/* Wrong arguments */
 				cout << "Wrong arguments. Please run again in this way (in any order): " << argv[0] << " [-k K] -i docfile " << endl;
@@ -38,15 +38,35 @@ int main(int argc, char const *argv[]) {
 				return -4;
 	}
 
-	cout << "K is " << top_results << " and input_file_name is " << input_file_name << endl;
-
-	/* Delete */
-	if( input_file_name != NULL ){
-		delete[] input_file_name;
-	}
-	else{
+	error = GetFileInfo(my_file_info);
+	if( error == -1 ){
+		cout << "Invalid id format in given docfile!" << endl;
+		delete[] my_file_info.file_name;
 		return -5;
 	}
+
+	/* Create Data structures */
+	DocMap my_doc_map(my_file_info.number_of_rows);
+	Trie my_trie;
+
+	/* Insert docs into DocMap and words into Trie */
+	error = InsertDocs(my_doc_map,my_trie,my_file_info);
+	if( error != 1 ){
+		cout << "Error occured when inserting docs int DocMap and words into Trie!" << endl;
+		delete[] my_file_info.file_name;
+		return -6;
+	}
+
+	/* Execute user options */
+	error = PromptMode( my_doc_map, my_trie );
+	if( error != 1 ){
+		cout << "Error occured in prompt mode!" << endl;
+		delete[] my_file_info.file_name;
+		return -7;
+	}
+
+	/* Delete */
+	delete[] my_file_info.file_name;
 
 	return 0;
 }

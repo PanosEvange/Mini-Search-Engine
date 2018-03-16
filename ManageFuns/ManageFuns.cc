@@ -120,11 +120,12 @@ int GetFileInfo( FileInfo &current_file_info ){
 
 	FILE* current_file;
 	char to_check;
-	int id;
+	int id=-1;
 
 	current_file = fopen(current_file_info.file_name, "r");
 
 	fscanf(current_file,"%d",&id);
+	//cout << "to prwto id poy diabastike einai " << id << endl;
 	if( id != 0 ){
 		fclose(current_file);
 		return -1;
@@ -134,15 +135,21 @@ int GetFileInfo( FileInfo &current_file_info ){
 	while( 1 ){
 		//printf("diabastike -%d-(%c)\n",to_check,to_check );
 		if( to_check == '\n' ){
-
+			//cout << "mpike edw gia number_of_rows na einai " << current_file_info.number_of_rows << endl;
 			current_file_info.number_of_rows ++;
 
-			to_check = fgetc(current_file);
-			if( to_check == EOF ){
-				break;
+			if ( fscanf(current_file,"%d",&id) != 1 ){
+
+				to_check = fgetc(current_file);
+				if( to_check == EOF ){
+					break;
+				}
+				fclose(current_file);
+				return -1;
+
 			}
 
-			fscanf(current_file,"%d",&id);
+			//cout << "to deytero id poy diabastike einai " << id << endl;
 			if( id != current_file_info.number_of_rows ){
 				fclose(current_file);
 				return -1;
@@ -161,7 +168,6 @@ int GetFileInfo( FileInfo &current_file_info ){
 
 /* Inserting Docs in DocMap and words in Trie */
 int InsertDocs( DocMap &current_doc_map, Trie &current_trie, FileInfo &current_file_info ){
-//int InsertDocs( FileInfo &current_file_info ){
 
 	char *init_doc = NULL;
 	char *doc;
@@ -176,11 +182,11 @@ int InsertDocs( DocMap &current_doc_map, Trie &current_trie, FileInfo &current_f
 
 	read = getline(&init_doc, &len, current_file);
 	while( read != -1 ){
-		cout << "init_doc is -" << init_doc << "- with " << strlen(init_doc) << " and read is " << read  << endl;
+		//cout << "init_doc is -" << init_doc << "- with " << strlen(init_doc) << " and read is " << read  << endl;
 
 		doc = GetFinalDoc(init_doc,read-1);
 
-		cout << "final_doc is -" << doc << "- with " << strlen(doc) << endl;
+		//cout << "final_doc is -" << doc << "- with " << strlen(doc) << endl;
 
 		/* Insert doc to DocMap at index id */
 		current_doc_map.InsertDoc(doc,id);
@@ -188,7 +194,8 @@ int InsertDocs( DocMap &current_doc_map, Trie &current_trie, FileInfo &current_f
 		/* Insert words of this doc into Trie */
 		number_of_words = InsertWords(doc,id,current_trie);
 
-		//current_doc_map.InsertDocCount(number_of_words,id);
+		/* Set number_of_words of doc with current id */
+		current_doc_map.SetDocCount(id,number_of_words);
 
 		/* Prepare for next loop */
 		read = getline(&init_doc, &len, current_file);
@@ -264,5 +271,112 @@ char* GetFinalDoc( char *doc_to_format, int last_char_pos ){
 	final_doc[end - begin + 1] = '\0';
 
 	return final_doc;
+
+}
+
+int PromptMode( DocMap &current_doc_map, Trie &current_trie ){
+
+	char *input = NULL;
+	char *option;
+	size_t len = 0;
+	char *word_to_check;
+	char *word_to_search;
+	int id_to_search;
+
+
+	while( 1 ){
+
+		cout << "Give your option:" << endl;
+
+		getline(&input, &len, stdin);
+
+		option = new char[ strlen(input) + 1 ];
+		strcpy(option,input);
+
+		word_to_check = strtok(option," \t \n");
+		if( word_to_check == NULL ){
+			continue;
+		}
+
+		if( (strcmp(word_to_check,"/search") == 0) || (strcmp(word_to_check,"\\search") == 0) ){
+
+		}
+		else if( (strcmp(word_to_check,"/df") == 0) || (strcmp(word_to_check,"\\df") == 0) ){
+
+			word_to_check = strtok(NULL," \t \n");
+			if( word_to_check != NULL ){
+
+				word_to_search = new char[ strlen(word_to_check) + 1 ];
+				strcpy(word_to_search,word_to_check);
+
+				word_to_check = strtok(NULL," \t \n");
+				if( word_to_check != NULL ){
+					cout << "Invalid option! There cannot be other words after the option /df word . Please try again!" << endl;
+				}
+				else{
+					current_trie.PrintSpecificDf(word_to_search);
+				}
+
+				delete[] word_to_search;
+
+			}
+			else{
+				current_trie.PrintAllDf();
+			}
+
+		}
+		else if( (strcmp(word_to_check,"/tf") == 0) || (strcmp(word_to_check,"\\tf") == 0) ){
+			word_to_check = strtok(NULL," \t \n");
+			if( word_to_check != NULL ){
+
+				id_to_search = atoi(word_to_check);
+				word_to_check = strtok(NULL," \t \n");
+
+				if( word_to_check != NULL ){
+
+					word_to_search = new char[ strlen(word_to_check) + 1 ];
+					strcpy(word_to_search,word_to_check);
+
+					word_to_check = strtok(NULL," \t \n");
+					if( word_to_check != NULL ){
+						cout << "Invalid option! There cannot be other words after the option /tf id word . Please try again!" << endl;
+					}
+					else{
+						current_trie.PrintTermFreq(word_to_search,id_to_search);
+					}
+
+					delete[] word_to_search;
+
+				}
+				else{
+					cout << "Invalid syntax of option /tf . No word was given. You should give /tf id word . Please try again!" << endl;
+				}
+
+			}
+			else{
+				cout << "Invalid syntax of option /tf . You should give /tf id word . Please try again!" << endl;
+			}
+		}
+		else if( (strcmp(word_to_check,"/exit") == 0) || (strcmp(word_to_check,"\\exit") == 0) ){
+
+			word_to_check = strtok(NULL," \t \n");
+			if( word_to_check != NULL ){
+				cout << "Invalid option! There cannot be words after the option /exit . Please try again!" << endl;
+			}
+			else{
+				delete[] option;
+				free(input);
+				return 1;
+			}
+
+		}
+		else {
+			cout << "Invalid option! Try again!" << endl;
+		}
+
+
+		delete[] option;
+		cout << endl;
+	}
 
 }
