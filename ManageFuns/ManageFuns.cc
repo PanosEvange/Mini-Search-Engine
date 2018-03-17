@@ -536,6 +536,8 @@ int Search( DocMap &current_doc_map, Trie &current_trie, Words &words_to_search,
 		cout << "Score of doc with id " << relevant_id_scores_array[i].id << " is " << relevant_id_scores_array[i].score << endl;
 	}
 
+	Heap scores_heap(relevant_id_scores_array,count_relevant_ids);
+	scores_heap.Print();
 
 	delete[] relevant_id_scores_array;
 	return 1;

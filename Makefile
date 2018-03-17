@@ -1,8 +1,8 @@
 #Makefile - PANAGIOTIS EVANGELIOU  AM:1115201500039
 
-OBJS = ./main/main.o ./ManageFuns/ManageFuns.o ./DocMap/DocMap.o ./PostingList/PostingList.o ./PostingList/DocInfo.o ./Trie/Trie.o
-SOURCE = ./main/main.cc ./ManageFuns/ManageFuns.cc ./DocMap/DocMap.cc ./PostingList/PostingList.cc ./PostingList/DocInfo.cc ./Trie/Trie.cc
-HEADER = ./ManageFuns/ManageFuns.h ./DocMap/DocMap.h ./PostingList/PostingList.h ./PostingList/DocInfo.h ./Trie/Trie.h
+OBJS = ./main/main.o ./ManageFuns/ManageFuns.o ./DocMap/DocMap.o ./PostingList/PostingList.o ./PostingList/DocInfo.o ./Trie/Trie.o ./Heap/Heap.o
+SOURCE = ./main/main.cc ./ManageFuns/ManageFuns.cc ./DocMap/DocMap.cc ./PostingList/PostingList.cc ./PostingList/DocInfo.cc ./Trie/Trie.cc ./Heap/Heap.cc
+HEADER = ./ManageFuns/ManageFuns.h ./DocMap/DocMap.h ./PostingList/PostingList.h ./PostingList/DocInfo.h ./Trie/Trie.h ./Heap/Heap.h
 OUT = ./build/minisearch
 CC = g++
 FLAGS = -g -c -Wall
@@ -27,6 +27,9 @@ $(OUT): $(OBJS)
 
 ./Trie/Trie.o: ./Trie/Trie.cc
 	$(CC) $(FLAGS) ./Trie/Trie.cc -o ./Trie/Trie.o
+
+./Heap/Heap.o: ./Heap/Heap.cc
+	$(CC) $(FLAGS) ./Heap/Heap.cc -o ./Heap/Heap.o
 
 clean:
 	rm -f $(OBJS) $(OUT)

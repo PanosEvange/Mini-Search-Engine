@@ -11,6 +11,7 @@ Description :
 
 #include "../Trie/Trie.h"
 #include "../DocMap/DocMap.h"
+#include "../Heap/Heap.h"
 
 typedef struct FileInfo{
 	int number_of_rows;
@@ -21,11 +22,6 @@ typedef struct ScoreInfo{
 	double score;
 	bool is_relevant;
 } ScoreInfo;
-
-typedef struct ScoreId{
-	double score;
-	int id;
-} ScoreId;
 
 int ArgumentManagement( int arg_num, char const **arguments, char **input_file_name, int *k );
 int GetFileInfo( FileInfo &current_file_info );
