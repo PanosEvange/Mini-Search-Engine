@@ -14,6 +14,7 @@ Description	: > ArgumentManagement : checks if arguments are ok and returning
 #include <iostream>
 #include <cstdlib>
 #include <cstdio>
+#include <cmath>
 
 using namespace std;
 
@@ -175,6 +176,7 @@ int InsertDocs( DocMap &current_doc_map, Trie &current_trie, FileInfo &current_f
 	ssize_t read = 1;
 	int id = 0;
 	int number_of_words;
+	int total_words = 0;
 
 	FILE* current_file;
 
@@ -182,11 +184,8 @@ int InsertDocs( DocMap &current_doc_map, Trie &current_trie, FileInfo &current_f
 
 	read = getline(&init_doc, &len, current_file);
 	while( read != -1 ){
-		//cout << "init_doc is -" << init_doc << "- with " << strlen(init_doc) << " and read is " << read  << endl;
 
 		doc = GetFinalDoc(init_doc,read-1);
-
-		//cout << "final_doc is -" << doc << "- with " << strlen(doc) << endl;
 
 		/* Insert doc to DocMap at index id */
 		current_doc_map.InsertDoc(doc,id);
@@ -197,12 +196,15 @@ int InsertDocs( DocMap &current_doc_map, Trie &current_trie, FileInfo &current_f
 		/* Set number_of_words of doc with current id */
 		current_doc_map.SetDocCount(id,number_of_words);
 
+		total_words += number_of_words;
+
 		/* Prepare for next loop */
 		read = getline(&init_doc, &len, current_file);
 		delete[] doc;
 		id++;
 	}
 
+	current_doc_map.SetWordCount(total_words);
 	fclose(current_file);
 	free(init_doc);
 
@@ -452,5 +454,61 @@ int FindWordsNumber( char *search_string_to_check ){
 
 int Search( DocMap &current_doc_map, Trie &current_trie, Words &words_to_search ){
 
+	PostingList *cur_PL;
+	PL_Node *cur_node = NULL;
+	ScoreInfo *init_scores_array;
+	int count_relevant_ids = 0;
+	double idf;
+	int df;
+	int tf;
+	double score;
+	double avgdl = ((double) current_doc_map.GetWordCount()) / current_doc_map.GetSize();
+
+	cout << "avgdl is " << avgdl << endl;
+
+	/* Create an array of size current_doc_map.GetDocCount() so as to have
+		O(1) insertion of a score and O(1) update of a score */
+	init_scores_array = new ScoreInfo[ current_doc_map.GetSize() ];
+
+	for( int i = 0; i < current_doc_map.GetSize(); i++ ){
+		init_scores_array[i].is_relevant = false;
+		init_scores_array[i].score = i + 2.34;
+	}
+
+	/* For each word, get posting list and calculate this partial
+		score for each id in this posting list */
+	for( int i = 0; i < words_to_search.GetSize(); i++ ){
+
+		cur_PL = current_trie.GetPostList(words_to_search.GetWord(i));
+
+		if( cur_PL == NULL ){ /* There is no Posting list for this word */
+			continue;
+		}
+
+		df = cur_PL->GetDocFrequency();
+
+		idf = ( current_doc_map.GetSize() - df + 0.5 ) / (df + 0.5);
+		idf = log10(idf);
+
+		cout << "idf for word " << words_to_search.GetWord(i) << " is " << idf << endl;
+
+		cur_node = cur_PL->GetFirst();
+
+		/* Calculate partial score for each id in this PostingList */
+		while( cur_node != NULL ){
+
+			tf = cur_node->GetTermFreq();
+			score = ( tf * ( 1.2 + 1 ) ) / ( tf + 1.2 * ( 1 - 0.75 + 0.75 * ( current_doc_map.GetDocCount(cur_node->GetId()) / avgdl ) ) );
+			score = idf * score;
+			cout << "To score gia to doc me id " << cur_node->GetId() << " einai " << score << endl;
+
+			cur_node = cur_node->GetNext();
+			
+		}
+
+	}
+
+	delete[] init_scores_array;
 	return 1;
+
 }

@@ -128,7 +128,7 @@ void Doc::SetWordsNum( int num ){
 
 /* Initialize DocMap data structure */
 DocMap::DocMap( int num_of_docs )
-:size(num_of_docs)
+:size(num_of_docs),words_count(0)
 {
 
 	docs = new Doc* [ size ];
@@ -385,4 +385,12 @@ int DocMap::GetDocCount( int index ){
 
 	return docs[index]->GetWordsNum();
 
+}
+
+int DocMap::GetWordCount( ){
+	return words_count;
+}
+
+void DocMap::SetWordCount( int num_of_words ){
+	words_count = num_of_words;
 }

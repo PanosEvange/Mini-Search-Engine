@@ -41,6 +41,7 @@ class DocMap{
 
 private:
 		int size;
+		int words_count;
 		Doc** docs;
 public:
 		DocMap( int num_of_docs );
@@ -53,7 +54,8 @@ public:
 		int GetSize();
 		int SetDocCount( int index, int num_of_words );
 		int GetDocCount( int index );
-
+		int GetWordCount( );
+		void SetWordCount( int num_of_words );
 };
 
 #endif /* DOC_MAP_H */

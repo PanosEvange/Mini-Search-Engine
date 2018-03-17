@@ -40,6 +40,7 @@ public:
 		bool IsEmpty();
 		void Print();
 		int GetTermFreq( int doc_id );
+		PL_Node* GetFirst();
 
 };
 

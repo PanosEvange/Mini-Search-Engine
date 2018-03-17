@@ -144,3 +144,7 @@ int PostingList::GetTermFreq( int doc_id ){
 
 	return -1;
 }
+
+PL_Node* PostingList::GetFirst(){
+	return first;
+}
