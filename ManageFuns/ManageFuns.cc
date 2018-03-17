@@ -537,7 +537,6 @@ int Search( DocMap &current_doc_map, Trie &current_trie, Words &words_to_search,
 	}
 
 	Heap scores_heap(relevant_id_scores_array,count_relevant_ids);
-	scores_heap.Print();
 
 	delete[] relevant_id_scores_array;
 	return 1;
