@@ -23,5 +23,7 @@ int InsertDocs( DocMap &current_doc_map, Trie &current_trie, FileInfo &current_f
 int InsertWords( char *doc_to_split, int id, Trie &current_trie );
 char* GetFinalDoc( char *doc_to_format, int last_char_pos );
 int PromptMode( DocMap &current_doc_map, Trie &current_trie );
+int FindWordsNumber( char *search_string_to_check );
+int Search( DocMap &current_doc_map, Trie &current_trie, Words &words_to_search );
 
 #endif /* MANAGE_H */

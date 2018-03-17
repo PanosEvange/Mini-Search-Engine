@@ -282,7 +282,7 @@ int PromptMode( DocMap &current_doc_map, Trie &current_trie ){
 	char *word_to_check;
 	char *word_to_search;
 	int id_to_search;
-
+	int number_of_words;
 
 	while( 1 ){
 
@@ -299,6 +299,17 @@ int PromptMode( DocMap &current_doc_map, Trie &current_trie ){
 		}
 
 		if( (strcmp(word_to_check,"/search") == 0) || (strcmp(word_to_check,"\\search") == 0) ){
+
+			number_of_words = FindWordsNumber( input );
+
+			if( number_of_words == 0 ){
+				cout << "Invalid option! No words were given for searching! Please try again!" << endl;
+			}
+			else{
+				/* Make Words for searching */
+				word_to_check = strtok(NULL," \t \n");
+				cout << "To dosmeno query perilambanei " << number_of_words << " lekseis" << endl;
+			}
 
 		}
 		else if( (strcmp(word_to_check,"/df") == 0) || (strcmp(word_to_check,"\\df") == 0) ){
@@ -379,4 +390,55 @@ int PromptMode( DocMap &current_doc_map, Trie &current_trie ){
 		cout << endl;
 	}
 
+}
+
+/* Find how many words there are in string with format "/search word1 word2 ..... wordn \n" */
+/* We have check before this call, that search_string_to_check has at least 1 word */
+int FindWordsNumber( char *search_string_to_check ){
+
+	int count = 0;
+	int current = 0;
+
+	/* Skip initial spaces/tabs before /search */
+	while( (search_string_to_check[current] == ' ') || (search_string_to_check[current] == '\t') ){
+		current++;
+	}
+
+	/* Skip /search */
+	while( (search_string_to_check[current] != ' ') && (search_string_to_check[current] != '\t') && (search_string_to_check[current] != '\n') ){
+		current++;
+	}
+
+	while( count < 10 ){
+
+		/* Skip spaces/tabs before word */
+		while( (search_string_to_check[current] == ' ') || (search_string_to_check[current] == '\t') ){
+			current++;
+		}
+
+		/* Because there may be \n after some spaces/tab */
+		if( search_string_to_check[current] == '\n' ){
+			break;
+		}
+
+		count ++;
+
+		/* Skip current word */
+		while( (search_string_to_check[current] != ' ') && (search_string_to_check[current] != '\t') && (search_string_to_check[current] != '\n') ){
+			current++;
+		}
+
+		/* Because there may be \n after a word */
+		if( search_string_to_check[current] == '\n' ){
+			break;
+		}
+
+	}
+
+	return count;
+}
+
+int Search( DocMap &current_doc_map, Trie &current_trie, Words &words_to_search ){
+
+	return 1;
 }
