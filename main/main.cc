@@ -58,7 +58,7 @@ int main(int argc, char const *argv[]) {
 	}
 
 	/* Execute user options */
-	error = PromptMode( my_doc_map, my_trie );
+	error = PromptMode( my_doc_map, my_trie, top_results );
 	if( error != 1 ){
 		cout << "Error occured in prompt mode!" << endl;
 		delete[] my_file_info.file_name;

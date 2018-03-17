@@ -276,7 +276,7 @@ char* GetFinalDoc( char *doc_to_format, int last_char_pos ){
 
 }
 
-int PromptMode( DocMap &current_doc_map, Trie &current_trie ){
+int PromptMode( DocMap &current_doc_map, Trie &current_trie, int top_k ){
 
 	char *input = NULL;
 	char *option;
@@ -318,7 +318,7 @@ int PromptMode( DocMap &current_doc_map, Trie &current_trie ){
 				}
 
 				/* Search words and find scores */
-				if ( Search(current_doc_map,current_trie,*words_to_search) != 1 ){
+				if ( Search(current_doc_map,current_trie,*words_to_search,top_k) != 1 ){
 					//something went wrong
 				}
 
@@ -452,11 +452,13 @@ int FindWordsNumber( char *search_string_to_check ){
 	return count;
 }
 
-int Search( DocMap &current_doc_map, Trie &current_trie, Words &words_to_search ){
+int Search( DocMap &current_doc_map, Trie &current_trie, Words &words_to_search, int top_k ){
 
 	PostingList *cur_PL;
 	PL_Node *cur_node = NULL;
 	ScoreInfo *init_scores_array;
+	ScoreId *relevant_id_scores_array;
+	int counter;
 	int count_relevant_ids = 0;
 	double idf;
 	int df;
@@ -464,7 +466,7 @@ int Search( DocMap &current_doc_map, Trie &current_trie, Words &words_to_search 
 	double score;
 	double avgdl = ((double) current_doc_map.GetWordCount()) / current_doc_map.GetSize();
 
-	cout << "avgdl is " << avgdl << endl;
+	//cout << "avgdl is " << avgdl << endl;
 
 	/* Create an array of size current_doc_map.GetDocCount() so as to have
 		O(1) insertion of a score and O(1) update of a score */
@@ -472,7 +474,7 @@ int Search( DocMap &current_doc_map, Trie &current_trie, Words &words_to_search 
 
 	for( int i = 0; i < current_doc_map.GetSize(); i++ ){
 		init_scores_array[i].is_relevant = false;
-		init_scores_array[i].score = i + 2.34;
+		init_scores_array[i].score = 0;
 	}
 
 	/* For each word, get posting list and calculate this partial
@@ -490,7 +492,7 @@ int Search( DocMap &current_doc_map, Trie &current_trie, Words &words_to_search 
 		idf = ( current_doc_map.GetSize() - df + 0.5 ) / (df + 0.5);
 		idf = log10(idf);
 
-		cout << "idf for word " << words_to_search.GetWord(i) << " is " << idf << endl;
+		//cout << "idf for word " << words_to_search.GetWord(i) << " is " << idf << endl;
 
 		cur_node = cur_PL->GetFirst();
 
@@ -500,15 +502,42 @@ int Search( DocMap &current_doc_map, Trie &current_trie, Words &words_to_search 
 			tf = cur_node->GetTermFreq();
 			score = ( tf * ( 1.2 + 1 ) ) / ( tf + 1.2 * ( 1 - 0.75 + 0.75 * ( current_doc_map.GetDocCount(cur_node->GetId()) / avgdl ) ) );
 			score = idf * score;
-			cout << "To score gia to doc me id " << cur_node->GetId() << " einai " << score << endl;
+			//cout << "To score gia to doc me id " << cur_node->GetId() << " einai " << score << endl;
+
+			if( !init_scores_array[cur_node->GetId()].is_relevant ){
+				init_scores_array[cur_node->GetId()].is_relevant = true;
+				count_relevant_ids ++;
+			}
+
+			init_scores_array[cur_node->GetId()].score += score;
 
 			cur_node = cur_node->GetNext();
-			
+
 		}
 
 	}
 
+	/* Make a smaller array to store only relevant ids scores */
+	relevant_id_scores_array = new ScoreId [ count_relevant_ids ];
+	counter = 0;
+	for( int i = 0; i < current_doc_map.GetSize(); i++ ){
+		if( init_scores_array[i].is_relevant ){
+			relevant_id_scores_array[counter].score = init_scores_array[i].score;
+			relevant_id_scores_array[counter].id = i;
+			counter ++;
+		}
+	}
 	delete[] init_scores_array;
+
+	/* Create heap for relevant_id_scores_array array */
+
+	cout << "Final relevant ids scores are: " << endl;
+	for( int i = 0; i < count_relevant_ids; i++ ){
+		cout << "Score of doc with id " << relevant_id_scores_array[i].id << " is " << relevant_id_scores_array[i].score << endl;
+	}
+
+
+	delete[] relevant_id_scores_array;
 	return 1;
 
 }
