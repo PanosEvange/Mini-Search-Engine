@@ -20,6 +20,7 @@ public:
 		int InsertWord( char *word_to_insert, int index );
 		int GetSize();
 		bool IsWordIn( char *word_to_check );
+		char* GetWord( int index );
 };
 
 class Doc{

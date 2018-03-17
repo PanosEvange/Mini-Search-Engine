@@ -91,6 +91,18 @@ bool Words::IsWordIn( char *word_to_check ){
 	return false;
 }
 
+char* Words::GetWord( int index ){
+
+	if( (index >= 0) && (index < num_of_words) ){
+		if( words_map[index] != NULL ){
+			return words_map[index];
+		}
+	}
+
+	return NULL;
+
+}
+
 Doc::Doc( char *doc_to_insert )
 :num_of_words(0)
 {

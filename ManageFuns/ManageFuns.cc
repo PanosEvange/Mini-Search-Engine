@@ -283,6 +283,7 @@ int PromptMode( DocMap &current_doc_map, Trie &current_trie ){
 	char *word_to_search;
 	int id_to_search;
 	int number_of_words;
+	Words *words_to_search;
 
 	while( 1 ){
 
@@ -306,9 +307,20 @@ int PromptMode( DocMap &current_doc_map, Trie &current_trie ){
 				cout << "Invalid option! No words were given for searching! Please try again!" << endl;
 			}
 			else{
+
 				/* Make Words for searching */
-				word_to_check = strtok(NULL," \t \n");
-				cout << "To dosmeno query perilambanei " << number_of_words << " lekseis" << endl;
+				words_to_search = new Words(number_of_words);
+				for( int i = 0; i < number_of_words; i++ ){
+					word_to_check = strtok(NULL," \t \n");
+					words_to_search->InsertWord(word_to_check,i);
+				}
+
+				/* Search words and find scores */
+				if ( Search(current_doc_map,current_trie,*words_to_search) != 1 ){
+					//something went wrong
+				}
+
+				delete words_to_search;
 			}
 
 		}
