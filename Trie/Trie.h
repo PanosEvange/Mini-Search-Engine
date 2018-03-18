@@ -1,10 +1,9 @@
 /***************************************************************************************
 Header file : Trie.h
 Programmer	: PANAGIOTIS EVANGELIOU  AM:1115201500039
-Description :
-
-
-
+Description : Declaration of classes TrieNode,NonFinalTrieNode,FinalTrieNode
+ 			  and Trie which are used to represent the Trie data structure
+			  which stores all the words of the input docfile.
 ****************************************************************************************/
 #ifndef TRIE_H
 #define TRIE_H

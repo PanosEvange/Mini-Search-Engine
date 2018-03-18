@@ -2,21 +2,28 @@
 Source file	: DocMap.cc
 Programmer	: PANAGIOTIS EVANGELIOU  AM:1115201500039
 Description	: 		Words
-			  > InsertWord :
-			  > GetSize :
-			  > IsWordIn :
-			  >
+			> Implementation of methods of class Word, which is used to
+			represent the words of query we need to search. It works as
+			an array of char* , that means pointers to char* , which
+			help us to insert a word, check if a word is already in
+			the array etc.
 
+					Doc
+			> Implementation of methods of class Doc, which is used to
+			represent each document of of the input docfile. It works as
+			an array of char, which help us to store the number of words in
+			this document as well as to get the document itself ( that means
+			a pointer to this document -char *- ).
 
 					DocMap
-			  > InsertDoc :
-			  > PrintDoc :
-			  > IsIndexIn :
-			  > HighlightText :
-			  > PrintHighlightedText :
-			  > GetSize :
-			  >
-			  >
+			> Implementation of methods of class DocMap, which is used
+			to store all documents of the input docfile. It works as an
+			array of pointers to Doc objects ( Doc** ). It help us to
+			insert a document, print a document ( underlining the words
+			we found ), get the number of all documents, get the number
+			of total words in all documents as well as get the number of
+			words in a specific document.
+
 ***************************************************************************/
 
 #include <cstring>
@@ -264,7 +271,7 @@ int DocMap::HighlightText( char *original, char **highlighting_string, Words &wo
 
 	}
 
-	/* Write spaces/tabs which may exists after the last word of the document */
+	/* Write spaces/tabs which may exist after the last word of the document */
 	if( offset < ( (int) strlen(original) ) ){
 		memset((*highlighting_string) + offset,' ',strlen(original) - offset );
 	}
@@ -300,7 +307,6 @@ int DocMap::PrintHighlightedText( char *text, char *highlighting_string, char *s
 
 	word = strtok(temp," \t");
 
-	//cout << "terminal_width is " << terminal_width << endl;
 	counter_width = 0;
 	counter_original = 0;
 	counter_highlight = 0;

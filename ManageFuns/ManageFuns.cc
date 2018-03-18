@@ -1,12 +1,64 @@
 /**************************************************************************
 Source file	: ManageFuns.cc
 Programmer	: PANAGIOTIS EVANGELIOU  AM:1115201500039
-Description	: > ArgumentManagement : checks if arguments are ok and returning
-				corresponding error if something is wrong
-			  >
-			  >
-			  >
+Description	: > ArgumentManagement : Checking if given arguments are the
+				correct arguments, else returing error.
 
+			  > GetFileInfo : We read the input file for the first time so as
+				to finding the number of ids of the document file ( skipping
+				the blank lines ), check if ids are in the correct sequence
+				and return error if something goes wrong.
+
+			  > InsertDocs : We read the input file for the second time, line
+				by line so as to inser docs in given DocMap and words in given
+				Trie.If a line is blank we skip it but at the situation where
+				there is no word after a given id, we return error and the
+				program exits.
+
+			  > InsertWords : We insert words of given document/string, into
+				the given Trie one by one.
+
+			  > GetFinalDoc : Returning the substring of given string,that is
+				the content of a document, which begins from the first non-space
+				character and ends at the last non-space character before '\n'.
+
+			  > PromptMode : We get into a loop, waiting for user options, till
+				user gives "\exit" as option. Options are:
+				# /search q1 q2 ... q10 or \search q1 q2 ... q10
+				# /df or \df
+				# /df word or \df word
+				# /tf id word or \tf id word
+				# /exit
+				Any other option is invalid.Blank options/lines are skipped and
+				whitespaces can be given before or after any element of above
+				options.
+
+			  > FindWordNumber : Finds how many words there are in given string,
+				which has the format "/search word1 word2 ... wordn \n"
+
+			  > Search : We get the posting list for each word at the given query,
+				we calculate the partial score of each id in each node of the
+				posting list and update the whole score of each id.For doing that
+				we create an array of length size of the docMap, that means size
+				of the count of all ids, so as to have O(1) access on storing the
+				score of each relevant to the query id and O(1) access on
+				updating the score of each relevant to the query id.Then we create
+				a smaller ,which will have only the scores and ids of relevant to
+				the query ids, and then we delete the initial "big" array. Finally
+				we give the last array to the Heap constructor so as to build
+				a heap and then we can call PrintTopK function.
+
+			  > PrintTopK : First of all we do the appropriate preparation of
+				the special info string, so as to allocate the appropriate space
+				and using an appropriate number of spaces so as to have the correct
+				alignment.Then we construct the special info string, taking in
+				consideration the number of digits of each serial number, of
+				each score number and of each id number. Finally we call the
+				PrintDoc method of given DocMap so as to print the current
+				document with the special info we constructed.
+
+			  > DigitCount : Returning the number of digits of given integer
+				number. If number is 0, returns 1 as number of digits.
 ***************************************************************************/
 
 #include <unistd.h>
@@ -306,6 +358,7 @@ int GetFinalDoc( char *doc_to_format, int last_char_pos, char* &final_doc ){
 
 }
 
+/* We get into a loop, waiting for user options, till user gives "\exit" as option */
 int PromptMode( DocMap &current_doc_map, Trie &current_trie, int top_k ){
 
 	char *input = NULL;
@@ -486,6 +539,8 @@ int FindWordsNumber( char *search_string_to_check ){
 	return count;
 }
 
+/* Calculate scores for each relevant to query ids, make a heap for sorting them
+   and then print top-k results.*/
 int Search( DocMap &current_doc_map, Trie &current_trie, Words &words_to_search, int top_k ){
 
 	PostingList *cur_PL;
@@ -499,8 +554,6 @@ int Search( DocMap &current_doc_map, Trie &current_trie, Words &words_to_search,
 	int tf;
 	double score;
 	double avgdl = ((double) current_doc_map.GetWordCount()) / current_doc_map.GetSize();
-
-	//cout << "avgdl is " << avgdl << endl;
 
 	/* Create an array of size current_doc_map.GetDocCount() so as to have
 		O(1) insertion of a score and O(1) update of a score */
@@ -527,8 +580,6 @@ int Search( DocMap &current_doc_map, Trie &current_trie, Words &words_to_search,
 		idf = ( current_doc_map.GetSize() - df + 0.5 ) / (df + 0.5);
 		idf = log10(idf);
 
-		//cout << "idf for word " << words_to_search.GetWord(i) << " is " << idf << endl;
-
 		cur_node = cur_PL->GetFirst();
 
 		/* Calculate partial score for each id in this PostingList */
@@ -537,13 +588,13 @@ int Search( DocMap &current_doc_map, Trie &current_trie, Words &words_to_search,
 			tf = cur_node->GetTermFreq();
 			score = ( tf * ( 1.2 + 1 ) ) / ( tf + 1.2 * ( 1 - 0.75 + 0.75 * ( current_doc_map.GetDocCount(cur_node->GetId()) / avgdl ) ) );
 			score = idf * score;
-			//cout << "To score gia to doc me id " << cur_node->GetId() << " einai " << score << endl;
 
 			if( !init_scores_array[cur_node->GetId()].is_relevant ){
 				init_scores_array[cur_node->GetId()].is_relevant = true;
 				count_relevant_ids ++;
 			}
 
+			/* Update the whole score */
 			init_scores_array[cur_node->GetId()].score += score;
 
 			cur_node = cur_node->GetNext();
@@ -584,6 +635,8 @@ int Search( DocMap &current_doc_map, Trie &current_trie, Words &words_to_search,
 
 }
 
+/* Constructing special info string for each document and then calling PrintDoc method of
+   given DocMap */
 int PrintTopK( DocMap &current_doc_map, Heap &current_heap, Words &words_to_search, int top_k ){
 
 	ScoreId max;
@@ -651,8 +704,6 @@ int PrintTopK( DocMap &current_doc_map, Heap &current_heap, Words &words_to_sear
 		}
 		offset = offset + cur_score_digits + 2;
 
-		//cout << "To special_info string einai -" << special_info << "-" << endl;
-
 		/* Print current doc */
 		current_doc_map.PrintDoc(words_to_search,max.id,special_info);
 
@@ -667,6 +718,8 @@ int PrintTopK( DocMap &current_doc_map, Heap &current_heap, Words &words_to_sear
 	return 1;
 }
 
+/* Returning the number of digits of given integer number. If number is 0,
+   returns 1 as number of digits. */
 int DigitCount( int num_to_check ){
 
 	int count = 0;

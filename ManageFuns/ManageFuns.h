@@ -1,10 +1,9 @@
 /***************************************************************************************
 Header file : ManageFuns.h
 Programmer	: PANAGIOTIS EVANGELIOU  AM:1115201500039
-Description :
-
-
-
+Description : Declaration of functions that are called from main function so as
+			  to complete the actions we need for inserting the data in data
+			  structures and executing the options of the user.
 ****************************************************************************************/
 #ifndef MANAGE_H
 #define MANAGE_H

@@ -1,8 +1,11 @@
 /**************************************************************************
 Source file	: Heap.cc
 Programmer	: PANAGIOTIS EVANGELIOU  AM:1115201500039
-Description	:
-
+Description	: Implementation of methods of class Heap, which is used to
+			  represent a binary heap, implemented as an array, which
+			  helps us to create ( Heapify ) a given array, and then
+			  taking the max ScoreId struct, whenever we call the methods
+			  GetMax.
 ***************************************************************************/
 
 using namespace std;
@@ -87,6 +90,7 @@ int Heap::GetMax( ScoreId &to_return ){
 
 }
 
+/* For debugging purposes */
 void Heap::Print(){
 
 	cout << "Elements of the heap are:" << endl;

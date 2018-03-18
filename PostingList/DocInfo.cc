@@ -1,9 +1,11 @@
 /**************************************************************************
 Source file	: DocInfo.cc
 Programmer	: PANAGIOTIS EVANGELIOU  AM:1115201500039
-Description	:
-
-
+Description	: Implementation of methods of class DocInfo, which is used to
+			  represent the information of each node in posting list. They
+			  help us to Increase the term_frequency of the word in the
+			  document with this id, as well as to get the id or the
+			  term_frequency of current node.
 ***************************************************************************/
 
 #include "DocInfo.h"

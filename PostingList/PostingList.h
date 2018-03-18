@@ -1,10 +1,8 @@
 /***************************************************************************************
 Header file : PostingList.h
 Programmer	: PANAGIOTIS EVANGELIOU  AM:1115201500039
-Description :
-
-
-
+Description : Declaration of classes PL_Node,PostingList which are used to
+			  represent posting list which has information about each word.
 ****************************************************************************************/
 #ifndef POST_LIST_H
 #define POST_LIST_H

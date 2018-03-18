@@ -1,7 +1,23 @@
 /**************************************************************************
 Source file	: Trie.cc
 Programmer	: PANAGIOTIS EVANGELIOU  AM:1115201500039
-Description	:
+Description	: Implementation of methods of classes TrieNode,NonFinalTrieNode,
+ 			  FinalTrieNode and Trie which are used to represent the Trie
+			  data structure. We use inheritance and virtual methods so as
+			  to have PostingList only to final nodes and not in every node,
+			  as if every node had a pointer to a posting list, it would be
+			  NULL most of the time, so it would be a waste of memory.
+
+			  These methods help us to Insert a word into the Trie, to print
+			  the document frequencies of all words in the Trie, or print a
+			  specific document frequency, print the term frequency of a
+			  given word and a given document id, as well as to get the
+			  posting list of a given word.
+
+			  The words in the Trie are sorted from smaller ASCII code to
+			  bigger ASCII code, so as we can stop a search faster if word
+			  isnt in the trie, most of the time , or we can use it in the
+			  future as a dictionary.
 
 ***************************************************************************/
 

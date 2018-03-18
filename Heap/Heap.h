@@ -1,10 +1,8 @@
 /***************************************************************************************
 Header file : Heap.h
 Programmer	: PANAGIOTIS EVANGELIOU  AM:1115201500039
-Description :
-
-
-
+Description : Declaration of class Heap, which represents a binary heap
+			  which help us to find the ids of top-K scores of the query.
 ****************************************************************************************/
 #ifndef HEAP_H
 #define HEAP_H

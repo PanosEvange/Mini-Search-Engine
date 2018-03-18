@@ -1,8 +1,12 @@
 /**************************************************************************
 Source file	: PostingList.cc
 Programmer	: PANAGIOTIS EVANGELIOU  AM:1115201500039
-Description	:
-
+Description	: Implementation of methods of classes PL_Node and PostingList,
+			  which are used to represent the posting list of each word in
+			  the Trie. They help us to get the document frequency of
+			  current word, the termFrequency of current word in a specific
+			  document , as well as get the posting list itself
+			  ( PL_Node * First ).
 ***************************************************************************/
 
 #include <iostream>

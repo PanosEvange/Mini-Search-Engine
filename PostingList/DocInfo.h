@@ -1,10 +1,10 @@
 /***************************************************************************************
 Header file : DocInfo.h
 Programmer	: PANAGIOTIS EVANGELIOU  AM:1115201500039
-Description :
-
-
-
+Description : Declaration of class DocInfo which is used to represent the
+			  information of each node in the posting list, which is the id of
+			  the a document and the term_frequency of the word in this
+			  document.
 ****************************************************************************************/
 #ifndef DOC_INFO_H
 #define DOC_INFO_H

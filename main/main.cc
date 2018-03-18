@@ -1,11 +1,14 @@
 /**************************************************************************
 Source file	: main.cc
 Programmer	: PANAGIOTIS EVANGELIOU  AM:1115201500039
-Description	: > Management of arguments
-			  > Calling init and destroy functions of structures
-			  > Calling store_docs functions
-			  > Calling prompt function
-
+Description	: Implementation of main function, which calls the
+			  ArgumentManagement function to manage the arguments of
+			  terminal, the GetFileInfo function to check the ids in the
+			  input docfile and get the number of ids in this file. Then
+			  it calls the function InsertDocs which inserts the documents
+			  in the docMap and the words in the Trie. Finally it calls
+			  the fucntion PromptMode which executes the options of the
+			  user.
 ***************************************************************************/
 
 #include <cstring>
