@@ -31,5 +31,7 @@ char* GetFinalDoc( char *doc_to_format, int last_char_pos );
 int PromptMode( DocMap &current_doc_map, Trie &current_trie, int top_k );
 int FindWordsNumber( char *search_string_to_check );
 int Search( DocMap &current_doc_map, Trie &current_trie, Words &words_to_search, int top_k );
+int PrintTopK( DocMap &current_doc_map, class Heap &current_heap, Words &words_to_search, int top_k );
+int DigitCount( int num_to_check );
 
 #endif /* MANAGE_H */

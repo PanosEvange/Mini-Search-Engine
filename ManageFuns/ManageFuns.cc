@@ -458,7 +458,6 @@ int Search( DocMap &current_doc_map, Trie &current_trie, Words &words_to_search,
 	PL_Node *cur_node = NULL;
 	ScoreInfo *init_scores_array;
 	ScoreId *relevant_id_scores_array;
-	ScoreId max;
 	int counter;
 	int count_relevant_ids = 0;
 	double idf;
@@ -520,6 +519,7 @@ int Search( DocMap &current_doc_map, Trie &current_trie, Words &words_to_search,
 
 	if( count_relevant_ids == 0 ){
 		cout << "No document with at least one word of this query was found!" << endl;
+		delete[] init_scores_array;
 		return -1;
 	}
 
@@ -539,21 +539,107 @@ int Search( DocMap &current_doc_map, Trie &current_trie, Words &words_to_search,
 	Heap scores_heap(relevant_id_scores_array,count_relevant_ids);
 
 	/* Print top-k scores */
-	cout << "Top_k scores are:" << endl;
-	for( int i = 0; i < top_k; i ++ ){
+	if( PrintTopK(current_doc_map,scores_heap,words_to_search,top_k) != 1 ){
+		//something went wrong
+	}
 
-		if( scores_heap.GetMax(max) != 1 ){
-			cout << "There is not other element in heap!" << endl;
-			break;
+	delete[] relevant_id_scores_array;
+	return 1;
+
+}
+
+int PrintTopK( DocMap &current_doc_map, Heap &current_heap, Words &words_to_search, int top_k ){
+
+	ScoreId max;
+	int top_k_digits;
+	int max_id_digits;
+	int top_score_digits;
+	int cur_k_digits;
+	int cur_id_digits;
+	int cur_score_digits;
+	char *special_info;
+	int special_length;
+	int offset = 0;
+
+	/* We are sure that there will be at least one document which contains
+		at least one of the word of the query */
+	current_heap.GetMax(max);
+
+	/* Find the number of digits of some max numbers */
+	top_k_digits = DigitCount(top_k);
+	max_id_digits = DigitCount(current_doc_map.GetSize());
+	top_score_digits = DigitCount((int)max.score);
+
+	/* Make space for special_info string */
+	/* We need top_k_digits + '.' + '(' + max_id_digits + ')' + '[' + '-'+ top_score_digits + 4 (for decimal digits) + ']' + ' ' + '\0' + some_spaces */
+	special_length = top_k_digits + 1 + 1 + max_id_digits + 1 + 1 + 1 + top_score_digits + 4 + 1 + 1 + 1 + 2;
+	special_info = new char[special_length];
+	special_info[special_length-1] = '\0';
+
+	for( int i = 1; i <= top_k; i ++ ){
+
+		offset = 0;
+		cur_k_digits = DigitCount(i);
+		cur_id_digits = DigitCount(max.id);
+		cur_score_digits = DigitCount(max.score);
+
+		/* Write Serial number */
+		for( int j = 0; j < ( top_k_digits - cur_k_digits ); j++ ){
+			special_info[offset] = ' ';
+			offset ++;
 		}
-		else{
-			cout << "Doc with id : " << max.id << " | score : " << max.score << endl;
+		sprintf(special_info+offset,"%d. (",i);
+		offset = offset + cur_k_digits + 3;
+
+		/* Write Id number */
+		for( int j = 0; j < ( max_id_digits - cur_id_digits ); j++ ){
+			special_info[offset] = ' ';
+			offset ++;
+		}
+		sprintf(special_info+offset,"%d) [",max.id);
+		offset = offset + cur_id_digits + 3;
+
+		/* Write Score */
+		for( int j = 0; j < ( top_score_digits - cur_score_digits ); j++ ){
+			special_info[offset] = ' ';
+			offset ++;
+		}
+		if( max.score > 0 ){
+			special_info[offset] = ' ';
+			offset ++;
+		} /* Else we need this space for '-' */
+		sprintf(special_info+offset,"%.4f] ",max.score);
+		if( max.score < 0 ){
+			offset ++;
+		}
+		offset = offset + cur_score_digits + 2;
+
+		cout << "To special_info string einai -" << special_info << "-" << endl;
+
+		if( current_heap.GetMax(max) != 1 ){
+			cout << "There is no other document which contains at least one of the given words for searching!" << endl;
+			break;
 		}
 
 	}
 
-
-	delete[] relevant_id_scores_array;
+	delete[] special_info;
 	return 1;
+}
+
+int DigitCount( int num_to_check ){
+
+	int count = 0;
+
+	while( num_to_check != 0 ){
+		num_to_check /= 10;
+		count ++;
+	}
+
+	if( count == 0 ){ /* num_to_check is 0, so it has 1 digit */
+		count = 1;
+	}
+
+	return count;
 
 }

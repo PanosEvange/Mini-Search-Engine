@@ -16,18 +16,18 @@ Heap::Heap( ScoreId *array_to_sort, int size_of_array )
 :array(array_to_sort),size(size_of_array)
 {
 
-	cout << "array before heapify : " << endl;
-	Print();
-	cout << endl;
+	// cout << "array before heapify : " << endl;
+	// Print();
+	// cout << endl;
 
 	for( int i = size/2; i >= 1; i-- ){
 		Heapify(i);
 	}
 
 
-	cout << "array after heapify : " << endl;
-	Print();
-	cout << endl;
+	// cout << "array after heapify : " << endl;
+	// Print();
+	// cout << endl;
 }
 
 Heap::~Heap(){
