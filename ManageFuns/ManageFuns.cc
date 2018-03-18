@@ -458,6 +458,7 @@ int Search( DocMap &current_doc_map, Trie &current_trie, Words &words_to_search,
 	PL_Node *cur_node = NULL;
 	ScoreInfo *init_scores_array;
 	ScoreId *relevant_id_scores_array;
+	ScoreId max;
 	int counter;
 	int count_relevant_ids = 0;
 	double idf;
@@ -517,6 +518,11 @@ int Search( DocMap &current_doc_map, Trie &current_trie, Words &words_to_search,
 
 	}
 
+	if( count_relevant_ids == 0 ){
+		cout << "No document with at least one word of this query was found!" << endl;
+		return -1;
+	}
+
 	/* Make a smaller array to store only relevant ids scores */
 	relevant_id_scores_array = new ScoreId [ count_relevant_ids ];
 	counter = 0;
@@ -530,13 +536,22 @@ int Search( DocMap &current_doc_map, Trie &current_trie, Words &words_to_search,
 	delete[] init_scores_array;
 
 	/* Create heap for relevant_id_scores_array array */
+	Heap scores_heap(relevant_id_scores_array,count_relevant_ids);
 
-	cout << "Final relevant ids scores are: " << endl;
-	for( int i = 0; i < count_relevant_ids; i++ ){
-		cout << "Score of doc with id " << relevant_id_scores_array[i].id << " is " << relevant_id_scores_array[i].score << endl;
+	/* Print top-k scores */
+	cout << "Top_k scores are:" << endl;
+	for( int i = 0; i < top_k; i ++ ){
+
+		if( scores_heap.GetMax(max) != 1 ){
+			cout << "There is not other element in heap!" << endl;
+			break;
+		}
+		else{
+			cout << "Doc with id : " << max.id << " | score : " << max.score << endl;
+		}
+
 	}
 
-	Heap scores_heap(relevant_id_scores_array,count_relevant_ids);
 
 	delete[] relevant_id_scores_array;
 	return 1;

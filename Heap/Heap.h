@@ -26,6 +26,7 @@ public:
 		Heap( ScoreId *array_to_sort, int size_of_array );
 		~Heap();
 		void Heapify( int index );
+		int GetMax( ScoreId &to_return );
 		void Print();
 
 };

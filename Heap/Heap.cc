@@ -15,13 +15,12 @@ using namespace std;
 Heap::Heap( ScoreId *array_to_sort, int size_of_array )
 :array(array_to_sort),size(size_of_array)
 {
-	int n = floor( ((double)size) / 2 );
 
 	cout << "array before heapify : " << endl;
 	Print();
 	cout << endl;
 
-	for( int i = n; i >= 1; i-- ){
+	for( int i = size/2; i >= 1; i-- ){
 		Heapify(i);
 	}
 
@@ -68,6 +67,31 @@ void Heap::Heapify( int index ){
 
 		Heapify(max);
 	}
+
+}
+
+int Heap::GetMax( ScoreId &to_return ){
+
+	if( size > 0 ){
+
+		to_return.score = array[0].score;
+		to_return.id = array[0].id;
+
+		array[0].id = array[size-1].id;
+		array[0].score = array[size-1].score;
+
+		array[size-1].id = to_return.id;
+		array[size-1].score = to_return.score;
+
+		size = size - 1;
+		Heapify(1);
+
+		return 1;
+	}
+	else{
+		return -1;
+	}
+
 
 }
 
