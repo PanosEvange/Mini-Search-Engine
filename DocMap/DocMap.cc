@@ -27,12 +27,22 @@ Description	: 		Words
 
 using namespace std;
 
+#include <cstdlib>
+#define CHECK_OR_EXIT(value)     \
+{                           \
+	if (value == NULL) {      \
+		cout << "Error at memory allocation! New() returned NULL! Program must exit!!" << endl;\
+		exit(EXIT_FAILURE);           \
+	}                         \
+}
+
 /* Initialize Words data structure */
 Words::Words( int n )
 :num_of_words(n)
 {
 
 	words_map = new char* [ n ];
+	CHECK_OR_EXIT(words_map);
 
 	for( int i = 0; i < num_of_words; i++ ){
 		words_map[i] = NULL;
@@ -65,6 +75,7 @@ int Words::InsertWord( char *word_to_insert, int index ){
 	}
 
 	words_map[index] = new char [ strlen(word_to_insert) + 1 ];
+	CHECK_OR_EXIT(words_map[index]);
 
 	strcpy(words_map[index],word_to_insert);
 
@@ -107,6 +118,7 @@ Doc::Doc( char *doc_to_insert )
 :num_of_words(0)
 {
 	my_doc = new char[ strlen(doc_to_insert) + 1 ];
+	CHECK_OR_EXIT(my_doc);
 	strcpy(my_doc,doc_to_insert);
 }
 
@@ -132,6 +144,7 @@ DocMap::DocMap( int num_of_docs )
 {
 
 	docs = new Doc* [ size ];
+	CHECK_OR_EXIT(docs);
 
 	for( int i = 0; i < size; i++ ){
 		docs[i] = NULL;
@@ -162,6 +175,7 @@ int DocMap::InsertDoc( char *doc_to_insert, int index ){
 	if( docs[index] == NULL ){
 
 		docs[index] = new Doc( doc_to_insert );
+		CHECK_OR_EXIT(docs[index]);
 
 	}
 	else{
@@ -210,9 +224,11 @@ int DocMap::HighlightText( char *original, char **highlighting_string, Words &wo
 	}
 
 	(*highlighting_string) = new char[strlen(original) + 1];
+	CHECK_OR_EXIT((*highlighting_string));
 
 	/* We need a copy of document as we will use strtok. */
 	temp = new char[strlen(original) + 1];
+	CHECK_OR_EXIT(temp);
 	strcpy(temp,original);
 
 	word = strtok(temp," \t");
@@ -279,7 +295,7 @@ int DocMap::PrintHighlightedText( char *text, char *highlighting_string, char *s
 
 	/* We need a copy of document as we will use strtok. */
 	temp = new char[strlen(text) + 1];
-
+	CHECK_OR_EXIT(temp);
 	strcpy(temp,text);
 
 	word = strtok(temp," \t");

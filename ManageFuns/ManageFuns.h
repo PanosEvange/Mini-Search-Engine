@@ -27,7 +27,7 @@ int ArgumentManagement( int arg_num, char const **arguments, char **input_file_n
 int GetFileInfo( FileInfo &current_file_info );
 int InsertDocs( DocMap &current_doc_map, Trie &current_trie, FileInfo &current_file_info );
 int InsertWords( char *doc_to_split, int id, Trie &current_trie );
-char* GetFinalDoc( char *doc_to_format, int last_char_pos );
+int GetFinalDoc( char *doc_to_format, int last_char_pos, char* &final_doc );
 int PromptMode( DocMap &current_doc_map, Trie &current_trie, int top_k );
 int FindWordsNumber( char *search_string_to_check );
 int Search( DocMap &current_doc_map, Trie &current_trie, Words &words_to_search, int top_k );

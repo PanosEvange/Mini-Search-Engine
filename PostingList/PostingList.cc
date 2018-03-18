@@ -11,6 +11,15 @@ using namespace std;
 
 #include "PostingList.h"
 
+#include <cstdlib>
+#define CHECK_OR_EXIT(value)     \
+{                           \
+	if (value == NULL) {      \
+		cout << "Error at memory allocation! New() returned NULL! Program must exit!!" << endl;\
+		exit(EXIT_FAILURE);           \
+	}                         \
+}
+
 PL_Node::PL_Node( const DocInfo &to_insert )
 :next(NULL),my_info(to_insert)
 {
@@ -70,6 +79,7 @@ void PostingList::Insert( int doc_id_to_insert ){
 	if( IsEmpty() ){ /* This is the first doc_id for this word */
 
 		first = new PL_Node(temp_doc_info);
+		CHECK_OR_EXIT(first);
 		last = first;
 		doc_frequency ++;
 
@@ -84,6 +94,7 @@ void PostingList::Insert( int doc_id_to_insert ){
 		else{ /* There is no doc_info about this doc_id */
 
 			temp = new PL_Node(temp_doc_info);
+			CHECK_OR_EXIT(temp);
 			last->SetNext(temp);
 			last = temp;
 			doc_frequency ++;

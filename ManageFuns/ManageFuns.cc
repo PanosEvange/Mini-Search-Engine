@@ -12,13 +12,21 @@ Description	: > ArgumentManagement : checks if arguments are ok and returning
 #include <unistd.h>
 #include <cstring>
 #include <iostream>
-#include <cstdlib>
 #include <cstdio>
 #include <cmath>
 
 using namespace std;
 
 #include "ManageFuns.h"
+
+#include <cstdlib>
+#define CHECK_OR_EXIT(value)     \
+{                           \
+	if (value == NULL) {      \
+		cout << "Error at memory allocation! New() returned NULL! Program must exit!!" << endl;\
+		exit(EXIT_FAILURE);           \
+	}                         \
+}
 
 /* Checking arguments and returning error if something is wrong */
 int ArgumentManagement( int arg_num, char const **arguments, char **input_file_name, int *k ){
@@ -37,6 +45,7 @@ int ArgumentManagement( int arg_num, char const **arguments, char **input_file_n
 
 			if( *input_file_name == NULL ){
 				*input_file_name = new char [strlen(arguments[2]) + 1];
+				CHECK_OR_EXIT(input_file_name);
 				strcpy(*input_file_name,arguments[2]);
 			}
 			else{
@@ -78,6 +87,7 @@ int ArgumentManagement( int arg_num, char const **arguments, char **input_file_n
 
 				if( *input_file_name == NULL ){
 					*input_file_name = new char [strlen(arguments[i]) + 1];
+					CHECK_OR_EXIT(input_file_name);
 					strcpy(*input_file_name,arguments[i]);
 				}
 				else{
@@ -126,7 +136,7 @@ int GetFileInfo( FileInfo &current_file_info ){
 	current_file = fopen(current_file_info.file_name, "r");
 
 	fscanf(current_file,"%d",&id);
-	//cout << "to prwto id poy diabastike einai " << id << endl;
+
 	if( id != 0 ){
 		fclose(current_file);
 		return -1;
@@ -134,9 +144,9 @@ int GetFileInfo( FileInfo &current_file_info ){
 
 	to_check = fgetc(current_file);
 	while( 1 ){
-		//printf("diabastike -%d-(%c)\n",to_check,to_check );
-		if( to_check == '\n' ){
-			//cout << "mpike edw gia number_of_rows na einai " << current_file_info.number_of_rows << endl;
+
+		if( to_check == '\n' ){ /* Next element should be the id of the next document */
+
 			current_file_info.number_of_rows ++;
 
 			if ( fscanf(current_file,"%d",&id) != 1 ){
@@ -150,7 +160,6 @@ int GetFileInfo( FileInfo &current_file_info ){
 
 			}
 
-			//cout << "to deytero id poy diabastike einai " << id << endl;
 			if( id != current_file_info.number_of_rows ){
 				fclose(current_file);
 				return -1;
@@ -162,7 +171,6 @@ int GetFileInfo( FileInfo &current_file_info ){
 
 
 	fclose(current_file);
-	//cout << " Last id which we read " << id << endl;
 
 	return 1;
 }
@@ -177,6 +185,7 @@ int InsertDocs( DocMap &current_doc_map, Trie &current_trie, FileInfo &current_f
 	int id = 0;
 	int number_of_words;
 	int total_words = 0;
+	int rv;
 
 	FILE* current_file;
 
@@ -185,8 +194,19 @@ int InsertDocs( DocMap &current_doc_map, Trie &current_trie, FileInfo &current_f
 	read = getline(&init_doc, &len, current_file);
 	while( read != -1 ){
 
-		doc = GetFinalDoc(init_doc,read-1);
+		rv = GetFinalDoc(init_doc,read-1,doc);
 
+		if( rv == -1 ){ /* Skip this line as it is blank */
+			read = getline(&init_doc, &len, current_file);
+			continue;
+		}
+
+		if( rv == -2 ){ /* No word after id! Program must exit! */
+			fclose(current_file);
+			free(init_doc);
+			cout << "No words were given after id " << id << " ! Program must exit!" << endl;
+			return -1;
+		}
 		/* Insert doc to DocMap at index id */
 		current_doc_map.InsertDoc(doc,id);
 
@@ -230,12 +250,11 @@ int InsertWords( char *doc_to_split, int id, Trie &current_trie ){
 }
 
 /* Return the substring of doc_to_format which begins
- 	from first non-space character after id, and
+	from first non-space character after id, and
 	ends at last non-space character before \n */
-char* GetFinalDoc( char *doc_to_format, int last_char_pos ){
+int GetFinalDoc( char *doc_to_format, int last_char_pos, char* &final_doc ){
 
 	int begin,end;
-	char *final_doc;
 	int current = 0;
 
 	/* Skip initial spaces/tabs before id */
@@ -243,9 +262,19 @@ char* GetFinalDoc( char *doc_to_format, int last_char_pos ){
 		current++;
 	}
 
+	if( doc_to_format[current] == '\n' ){ /* This line is blank so skip it */
+		final_doc = NULL;
+		return -1;
+	}
+
 	/* Skip id */
-	while( (doc_to_format[current] != ' ') && (doc_to_format[current] != '\t') ){
+	while( (doc_to_format[current] != ' ') && (doc_to_format[current] != '\t') && (doc_to_format[current] != '\n') ){
 		current++;
+	}
+
+	if( doc_to_format[current] == '\n' ){ /* No word after id */
+		final_doc = NULL;
+		return -2;
 	}
 
 	/* Find the first non-space character after id */
@@ -268,11 +297,12 @@ char* GetFinalDoc( char *doc_to_format, int last_char_pos ){
 	end = current;
 
 	final_doc = new char[ ( end - begin + 1 ) + 1 ];
+	CHECK_OR_EXIT(final_doc);
 
 	memcpy(final_doc,doc_to_format+begin,end - begin + 1);
 	final_doc[end - begin + 1] = '\0';
 
-	return final_doc;
+	return 1;
 
 }
 
@@ -294,6 +324,7 @@ int PromptMode( DocMap &current_doc_map, Trie &current_trie, int top_k ){
 		getline(&input, &len, stdin);
 
 		option = new char[ strlen(input) + 1 ];
+		CHECK_OR_EXIT(option);
 		strcpy(option,input);
 
 		word_to_check = strtok(option," \t \n");
@@ -312,6 +343,7 @@ int PromptMode( DocMap &current_doc_map, Trie &current_trie, int top_k ){
 
 				/* Make Words for searching */
 				words_to_search = new Words(number_of_words);
+				CHECK_OR_EXIT(words_to_search);
 				for( int i = 0; i < number_of_words; i++ ){
 					word_to_check = strtok(NULL," \t \n");
 					words_to_search->InsertWord(word_to_check,i);
@@ -332,6 +364,7 @@ int PromptMode( DocMap &current_doc_map, Trie &current_trie, int top_k ){
 			if( word_to_check != NULL ){
 
 				word_to_search = new char[ strlen(word_to_check) + 1 ];
+				CHECK_OR_EXIT(word_to_search);
 				strcpy(word_to_search,word_to_check);
 
 				word_to_check = strtok(NULL," \t \n");
@@ -360,6 +393,7 @@ int PromptMode( DocMap &current_doc_map, Trie &current_trie, int top_k ){
 				if( word_to_check != NULL ){
 
 					word_to_search = new char[ strlen(word_to_check) + 1 ];
+					CHECK_OR_EXIT(word_to_search);
 					strcpy(word_to_search,word_to_check);
 
 					word_to_check = strtok(NULL," \t \n");
@@ -471,6 +505,7 @@ int Search( DocMap &current_doc_map, Trie &current_trie, Words &words_to_search,
 	/* Create an array of size current_doc_map.GetDocCount() so as to have
 		O(1) insertion of a score and O(1) update of a score */
 	init_scores_array = new ScoreInfo[ current_doc_map.GetSize() ];
+	CHECK_OR_EXIT(init_scores_array);
 
 	for( int i = 0; i < current_doc_map.GetSize(); i++ ){
 		init_scores_array[i].is_relevant = false;
@@ -525,6 +560,7 @@ int Search( DocMap &current_doc_map, Trie &current_trie, Words &words_to_search,
 
 	/* Make a smaller array to store only relevant ids scores */
 	relevant_id_scores_array = new ScoreId [ count_relevant_ids ];
+	CHECK_OR_EXIT(relevant_id_scores_array);
 	counter = 0;
 	for( int i = 0; i < current_doc_map.GetSize(); i++ ){
 		if( init_scores_array[i].is_relevant ){
@@ -574,6 +610,7 @@ int PrintTopK( DocMap &current_doc_map, Heap &current_heap, Words &words_to_sear
 	/* We need top_k_digits + '.' + '(' + max_id_digits + ')' + '[' + '-'+ top_score_digits + 5 (for '.' + decimal digits) + ']' + ' ' + '\0' + some_spaces */
 	special_length = top_k_digits + 1 + 1 + max_id_digits + 1 + 1 + 1 + top_score_digits + 5 + 1 + 1 + 1 + 2;
 	special_info = new char[special_length];
+	CHECK_OR_EXIT(special_info);
 	special_info[special_length-1] = '\0';
 
 	for( int i = 1; i <= top_k; i ++ ){
