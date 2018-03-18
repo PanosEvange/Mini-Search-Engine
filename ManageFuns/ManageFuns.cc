@@ -571,8 +571,8 @@ int PrintTopK( DocMap &current_doc_map, Heap &current_heap, Words &words_to_sear
 	top_score_digits = DigitCount((int)max.score);
 
 	/* Make space for special_info string */
-	/* We need top_k_digits + '.' + '(' + max_id_digits + ')' + '[' + '-'+ top_score_digits + 4 (for decimal digits) + ']' + ' ' + '\0' + some_spaces */
-	special_length = top_k_digits + 1 + 1 + max_id_digits + 1 + 1 + 1 + top_score_digits + 4 + 1 + 1 + 1 + 2;
+	/* We need top_k_digits + '.' + '(' + max_id_digits + ')' + '[' + '-'+ top_score_digits + 5 (for '.' + decimal digits) + ']' + ' ' + '\0' + some_spaces */
+	special_length = top_k_digits + 1 + 1 + max_id_digits + 1 + 1 + 1 + top_score_digits + 5 + 1 + 1 + 1 + 2;
 	special_info = new char[special_length];
 	special_info[special_length-1] = '\0';
 
@@ -614,7 +614,10 @@ int PrintTopK( DocMap &current_doc_map, Heap &current_heap, Words &words_to_sear
 		}
 		offset = offset + cur_score_digits + 2;
 
-		cout << "To special_info string einai -" << special_info << "-" << endl;
+		//cout << "To special_info string einai -" << special_info << "-" << endl;
+
+		/* Print current doc */
+		current_doc_map.PrintDoc(words_to_search,max.id,special_info);
 
 		if( current_heap.GetMax(max) != 1 ){
 			cout << "There is no other document which contains at least one of the given words for searching!" << endl;

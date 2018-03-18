@@ -284,7 +284,7 @@ int DocMap::PrintHighlightedText( char *text, char *highlighting_string, char *s
 
 	word = strtok(temp," \t");
 
-	cout << "terminal_width is " << terminal_width << endl;
+	//cout << "terminal_width is " << terminal_width << endl;
 
 	counter_width = 0;
 	counter_original = 0;
