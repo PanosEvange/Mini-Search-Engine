@@ -1,3 +1,5 @@
+#Mini search engine implementation
+
 >Course Project of System Programming Course.
 
 >Implemented in C++ creating Data Structures like Trie and Posting Lists for
