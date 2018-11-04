@@ -1,28 +1,30 @@
-#Mini search engine implementation
+###Mini search engine implementation
 
->Course Project of System Programming Course.
+- Course Project of System Programming Course.
 
->Implemented in C++ creating Data Structures like Trie and Posting Lists for
+- Implemented in C++ creating Data Structures like Trie and Posting Lists for
 representation of Inverted Index.
 
->Also used Polymorphism so as to minimize the memory usage for storing each
+- Also used Polymorphism so as to minimize the memory usage for storing each
 word into Trie .
 
-#Compile
+##Compile
 
-> being in root folder run *make*
+- being in root folder run **make**
 
-#Execute
+##Execute
 
->being in root folder run *./build/minisearch -i docfile -k K*
+- being in root folder run **./build/minisearch -i docfile -k K**
+```
 - where docfile is the name of the file which contains the documents to be
     stored in the program
 - where K is the parameter which indicates the number of results that should
     be returned in each query
+```
+##Interface
 
-#Interface
-
->Options that can be given when the program is in running mode
+- Options that can be given when the program is in running mode
+```
 - */search q1 q2 ... q10*
     search for given words into documents
 - */df*
@@ -32,7 +34,8 @@ word into Trie .
     specific id
 - */exit*
     exit from the application
+```
 
-#Example to run
+##Example to run
 
->*./build/minisearch -i ./Dataset/smallDataset.txt -k 10*
+- **./build/minisearch -i ./Dataset/smallDataset.txt -k 10**
