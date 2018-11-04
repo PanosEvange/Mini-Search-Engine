@@ -10,11 +10,11 @@ word into Trie .
 
 #Compile
 
-> being in root folder run make
+> being in root folder run *make*
 
 #Execute
 
->being in root folder run ./build/minisearch -i docfile -k K
+>being in root folder run *./build/minisearch -i docfile -k K*
 - where docfile is the name of the file which contains the documents to be
     stored in the program
 - where K is the parameter which indicates the number of results that should
@@ -23,16 +23,16 @@ word into Trie .
 #Interface
 
 >Options that can be given when the program is in running mode
-- /search q1 q2 ... q10
+- */search q1 q2 ... q10*
     search for given words into documents
-- /df
+- */df*
     print the document frequency of the vector
-- /tf id word
+- */tf id word*
     print the term frequency of the specific word in document with
     specific id
-- /exit
+- */exit*
     exit from the application
 
 #Example to run
 
->./build/minisearch -i ./Dataset/smallDataset.txt -k 10
+>*./build/minisearch -i ./Dataset/smallDataset.txt -k 10*
