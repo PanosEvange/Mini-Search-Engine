@@ -32,4 +32,5 @@ word into Trie .
         exit from the application
 
 #Example to run
+
     >./build/minisearch -i ./Dataset/smallDataset.txt -k 10
