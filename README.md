@@ -7,9 +7,11 @@ representation of Inverted Index.
 word into Trie .
 
 #Compile
-    >being in root folder run make
+
+    > being in root folder run make
 
 #Execute
+
     >being in root folder run ./build/minisearch -i docfile -k K
     - where docfile is the name of the file which contains the documents to be
     stored in the program
