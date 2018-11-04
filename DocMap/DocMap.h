@@ -2,7 +2,7 @@
 Header file : DocMap.h
 Programmer	: PANAGIOTIS EVANGELIOU  AM:1115201500039
 Description : Declaration of classes Words,Doc and DocMap which are used to
-			  reporesent the words we need to search and the documents we read
+			  represent the words we need to search and the documents we read
 			  from the docfile.
 ****************************************************************************************/
 #ifndef DOC_MAP_H
